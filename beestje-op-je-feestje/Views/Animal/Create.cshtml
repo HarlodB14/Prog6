@@ -1,0 +1,35 @@
+﻿
+<div class="container text-center">
+    <h1 class="display-4">Nieuwe dier aanmaken</h1>
+
+    <form method="post" action="/YourController/YourAction" enctype="multipart/form-data" class="form-group mx-auto" style="max-width: 33%;">
+        <div class="mb-3">
+            <label for="name" class="form-label">Naam</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Vul hier een naam" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="type" class="form-label">Type</label>
+            <select class="form-select" id="type" name="type" required>
+                <option value="">Selecteer een Type</option>
+                <option value="Tropical">Tropisch</option>
+                <option value="Farm">Boerderijdier</option>
+                <option value="Jungle">Jungledier</option>
+                <option value="Snow">Sneeuwdier</option>
+                <option value="Desert">Woestijndier</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="price" class="form-label">Prijs</label>
+            <input type="number" class="form-control" id="price" name="price" placeholder="Vul een prijs in" step="0.01" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="imageFile" class="form-label">Upload een afbeelding</label>
+            <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*" required>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Submit</button>
+    </form>
+</div>
