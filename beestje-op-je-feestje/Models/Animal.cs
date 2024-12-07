@@ -6,15 +6,15 @@ namespace beestje_op_je_feestje.Models
     public class Animal
     {
         [Key]
-        public int _id {  get; set; }
+        public int Id {  get; set; }
         [Required]
-        public string _name { get; set; }
+        public string name { get; set; }
         [Required]
-        public Type _type { get; set; }
+        public Type type { get; set; }
         [Required]
-        public decimal _price { get; set; }
+        public decimal price { get; set; }
         [Required]
-        public string _imageUrl { get; set; }
+        public string imageUrl { get; set; }
 
 
 

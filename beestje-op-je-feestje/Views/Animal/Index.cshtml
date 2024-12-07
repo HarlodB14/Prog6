@@ -20,27 +20,16 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Koe</td>
-                <td>exotisch</td>
-                <td>€500</td>
-                <td>insert hier</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Leeuw</td>
-                <td>exotisch</td>
-                <td>€500</td>
-                <td>insert hier</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Pinguïn</td>
-                <td>exotisch</td>
-                <td>€500</td>
-                <td>insert hier</td>
-            </tr>
+            @foreach (var animal in Model)
+            {
+                <tr>
+                    <th scope="row">@animal.Id</th>
+                    <td>@animal.Name</td>
+                    <td>@animal.Type</td>
+                    <td>€@animal.Price</td>
+                    <td><img src="@animal.ImageUrl" alt="@animal.Name" style="max-height: 100px;"/></td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>

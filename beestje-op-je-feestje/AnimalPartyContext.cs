@@ -13,7 +13,7 @@ public class AnimalPartyContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Animal>()
-            .HasKey(a => a._id);  
+            .HasKey(a => a.Id);  
     }
 
 

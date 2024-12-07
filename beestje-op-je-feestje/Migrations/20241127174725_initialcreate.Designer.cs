@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace beestjeopjefeestje.Migrations
 {
     [DbContext(typeof(AnimalPartyContext))]
-    [Migration("20241127164309_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241127174725_initialcreate")]
+    partial class initialcreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,27 +25,27 @@ namespace beestjeopjefeestje.Migrations
 
             modelBuilder.Entity("beestje_op_je_feestje.Models.Animal", b =>
                 {
-                    b.Property<int>("_id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("_id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<string>("_imageUrl")
+                    b.Property<string>("imageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("_name")
+                    b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("_price")
+                    b.Property<decimal>("price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("_type")
+                    b.Property<int>("type")
                         .HasColumnType("int");
 
-                    b.HasKey("_id");
+                    b.HasKey("id");
 
                     b.ToTable("animals");
                 });
