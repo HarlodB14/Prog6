@@ -2,6 +2,6 @@
 {
     public enum Type
     {
-        tropical, farmAnimal, exotic, icey
+        tropical, farm, exotic, snow, dessert, jungle
     }
 }
