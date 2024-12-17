@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using beestje_op_je_feestje.ViewModels;
 
 namespace beestje_op_je_feestje.Controllers
 {
@@ -30,42 +31,100 @@ namespace beestje_op_je_feestje.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create(Animal model, IFormFile imageFile)
+        public async Task<IActionResult> Create(AnimalViewModel viewModel, IFormFile imageFile)
         {
-            if (imageFile != null)
+            //upload & store image first
+            await ProcessImage(viewModel, imageFile);
+
+            if (!ModelState.IsValid && viewModel.ImageUrl == null)
             {
-                if (imageFile.Length > 0)
+                return View(viewModel);
+            }
+
+            var animal = new Animal
+            {
+                Name = viewModel.Name,
+                Type = viewModel.Type,
+                Price = viewModel.Price,
+                ImageUrl = viewModel.ImageUrl
+            };
+
+            _context.animals.Add(animal);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = animal.Name + " is succesvol toegevoegd!";
+            return RedirectToAction("Index");
+        }
+
+        private async Task ProcessImage(AnimalViewModel viewModel, IFormFile imageFile)
+        {
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = Path.GetFileName(imageFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-                    Directory.CreateDirectory(uploadsFolder);
-                    var fileName = Path.GetFileName(imageFile.FileName);
-                    var filePath = Path.Combine(uploadsFolder, fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await imageFile.CopyToAsync(stream);
-                    }
-
-                    model.imageUrl = "/uploads/" + fileName;
-
-                    ModelState.Remove("imageUrl");
+                    await imageFile.CopyToAsync(stream);
                 }
+
+                viewModel.ImageUrl = "/uploads/" + fileName;
             }
             else
             {
                 ModelState.AddModelError("imageFile", "An image is required.");
             }
+        }
 
+        [HttpPost]
+        public IActionResult Edit(Animal model)
+        {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            _context.animals.Add(model);
-            await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = model.name + " is succesvol toegevoegd!";
+            var animal = _context.animals.FirstOrDefault(a => a.Id == model.Id);
+            if (animal == null)
+            {
+                return NotFound();
+            }
+
+            animal.Name = model.Name;
+            animal.Type = model.Type;
+            animal.Price = model.Price;
+            animal.ImageUrl = model.ImageUrl;
+
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = model.Name + " succesvol bijgewerkt!";
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            var animal = _context.animals
+                .Where(a => a.Id == id)
+                .Select(a => new AnimalViewModel
+                {
+                    Name = a.Name,
+                    Type = a.Type,
+                    Price = a.Price,
+                    ImageUrl = a.ImageUrl
+                })
+                .FirstOrDefault();
+
+            if (animal == null)
+            {
+                return NotFound();
+            }
+
+            return View(animal);
+        }
+
 
         [HttpPost]
         public IActionResult Delete(int id)
@@ -85,7 +144,7 @@ namespace beestje_op_je_feestje.Controllers
                 _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT ('animals', RESEED, 0)");
             }
 
-            TempData["SuccessMessage"] = animal.name + " is succesvol verwijderd!";
+            TempData["SuccessMessage"] = animal.Name + " is succesvol verwijderd!";
             return RedirectToAction("Index");
         }
 

@@ -1,0 +1,19 @@
+﻿@model beestje_op_je_feestje.ViewModels.AnimalViewModel
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card" style="width: 100%;">
+                <img class="card-img-top" src="@Model.ImageUrl" alt="@Model.Name" />
+                <div class="card-body">
+                    <h5 class="card-title">@Model.Name</h5>
+                    <p class="card-text">
+                        <strong>Type:</strong> @Model.Type <br />
+                        <strong>Price:</strong> €@Model.Price
+                    </p>
+                    <a href="@Url.Action("Index", "Animal")" class="btn btn-primary">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

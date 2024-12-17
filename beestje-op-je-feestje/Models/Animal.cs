@@ -8,13 +8,13 @@ namespace beestje_op_je_feestje.Models
         [Key]
         public int Id {  get; set; }
         [Required]
-        public string name { get; set; }
+        public string Name { get; set; }
         [Required]
-        public Type type { get; set; }
+        public Type Type { get; set; }
         [Required]
-        public decimal price { get; set; }
+        public decimal Price { get; set; }
         [Required]
-        public string imageUrl { get; set; }
+        public string ImageUrl { get; set; }
 
 
 

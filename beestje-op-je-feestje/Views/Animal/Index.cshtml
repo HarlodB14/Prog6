@@ -1,4 +1,5 @@
-﻿<div class="container">
+﻿@using beestje_op_je_feestje.ViewModels
+<div class="container">
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -32,22 +33,24 @@
             {
                 <tr>
                     <th scope="row">@animal.Id</th>
-                    <td>@animal.name</td>
-                    <td>@animal.type</td>
-                    <td>€@animal.price</td>
+                    <td>@animal.Name</td>
+                    <td>@animal.Type</td>
+                    <td>€@animal.Price</td>
                     <td>
-                        <img src="@animal.imageUrl" alt="@animal.name" class="img-fluid" style="max-height: 100px;" />
+                        <img src="@animal.ImageUrl" alt="@animal.Name" class="img-fluid" style="max-height: 100px;" />
                     </td>
                     <td class="text-center">
-                        <!-- Align buttons to the right -->
                         <div class="d-inline-flex">
                             <form asp-controller="Animal" asp-action="Delete" method="post" class="d-inline">
                                 <input type="hidden" name="id" value="@animal.Id" />
                                 <button type="submit" class="btn btn-danger me-2">Verwijderen</button>
                             </form>
-
-                            <button type="button" class="btn btn-warning me-2">Bewerken</button>
-                            <button type="button" class="btn btn-info me-2">Info</button>
+                            <form asp-controller="Animal" asp-action="Edit" method="post" class="d-inline">
+                                <button type="button" class="btn btn-warning me-2">Bewerken</button>
+                            </form>
+                            <form asp-controller="Animal" asp-action="Info" method="get" class="d-inline">
+                                <button type="button" class="btn btn-info me-2">Info</button>
+                            </form>
                         </div>
                     </td>
                 </tr>
