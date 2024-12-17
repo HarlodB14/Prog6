@@ -1,5 +1,4 @@
-﻿@using beestje_op_je_feestje.ViewModels
-<div class="container">
+﻿<div class="container">
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -45,12 +44,11 @@
                                 <input type="hidden" name="id" value="@animal.Id" />
                                 <button type="submit" class="btn btn-danger me-2">Verwijderen</button>
                             </form>
-                            <form asp-controller="Animal" asp-action="Edit" method="post" class="d-inline">
-                                <button type="button" class="btn btn-warning me-2">Bewerken</button>
+                            <form asp-controller="Animal" asp-action="Edit" method="get" class="d-inline">
+                                <input type="hidden" name="id" value="@animal.Id" />
+                                <button type="submit" class="btn btn-warning me-2">Bewerken</button>
                             </form>
-                            <form asp-controller="Animal" asp-action="Info" method="get" class="d-inline">
-                                <button type="button" class="btn btn-info me-2">Info</button>
-                            </form>
+                            <a asp-controller="Animal" asp-action="Detail" asp-route-id="@animal.Id" class="btn btn-info me-2">Info</a>
                         </div>
                     </td>
                 </tr>

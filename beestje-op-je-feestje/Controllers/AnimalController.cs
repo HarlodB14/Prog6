@@ -79,32 +79,61 @@ namespace beestje_op_je_feestje.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult Edit(Animal model)
+        [HttpGet]
+        public IActionResult Edit(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var animal = _context.animals.FirstOrDefault(a => a.Id == model.Id);
+            var animal = _context.animals.FirstOrDefault(a => a.Id == id);
             if (animal == null)
             {
                 return NotFound();
             }
 
-            animal.Name = model.Name;
-            animal.Type = model.Type;
-            animal.Price = model.Price;
-            animal.ImageUrl = model.ImageUrl;
+            var viewModel = new AnimalViewModel
+            {
+                Id = animal.Id,
+                Name = animal.Name,
+                Type = animal.Type,
+                Price = animal.Price,
+                ImageUrl = animal.ImageUrl
+            };
 
-            _context.SaveChanges();
-            TempData["SuccessMessage"] = model.Name + " succesvol bijgewerkt!";
-            return RedirectToAction("Index");
+            return View(viewModel);  
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(AnimalViewModel viewModel, IFormFile imageFile)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);  
+            }
+
+            var animal = _context.animals.FirstOrDefault(a => a.Id == viewModel.Id);
+            if (animal == null)
+            {
+                return NotFound();
+            }
+
+            //voor image
+            if (imageFile != null && imageFile.Length > 0 && viewModel.ImageUrl == null)
+            {
+                await ProcessImage(viewModel, imageFile);  
+            }
+
+            animal.Name = viewModel.Name;
+            animal.Type = viewModel.Type;
+            animal.Price = viewModel.Price;
+            animal.ImageUrl = viewModel.ImageUrl;
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Animal updated successfully!";
+            return RedirectToAction("Index");  
         }
 
         [HttpGet]
-        public IActionResult Details(int id)
+        public IActionResult Detail(int id)
         {
             var animal = _context.animals
                 .Where(a => a.Id == id)
