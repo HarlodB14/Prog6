@@ -11,6 +11,6 @@ namespace beestje_op_je_feestje.ViewModels
 
         public decimal Price { get; set; }
 
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

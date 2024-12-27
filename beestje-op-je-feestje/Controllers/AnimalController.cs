@@ -33,7 +33,6 @@ namespace beestje_op_je_feestje.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(AnimalViewModel viewModel, IFormFile imageFile)
         {
-            //upload & store image first
             await ProcessImage(viewModel, imageFile);
 
             if (!ModelState.IsValid && viewModel.ImageUrl == null)
@@ -100,36 +99,42 @@ namespace beestje_op_je_feestje.Controllers
             return View(viewModel);  
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Edit(AnimalViewModel viewModel, IFormFile imageFile)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(viewModel);  
-            }
-
             var animal = _context.animals.FirstOrDefault(a => a.Id == viewModel.Id);
             if (animal == null)
             {
                 return NotFound();
             }
 
-            //voor image
-            if (imageFile != null && imageFile.Length > 0 && viewModel.ImageUrl == null)
+            if (imageFile != null && imageFile.Length > 0)
             {
-                await ProcessImage(viewModel, imageFile);  
+                await ProcessImage(viewModel, imageFile); 
+                animal.ImageUrl = viewModel.ImageUrl; 
+            }
+            else
+            {
+                ModelState.AddModelError("imageFile", "Geen afbeelding geupload. Probeer een nieuwe afbeelding te uploaden.");
             }
 
             animal.Name = viewModel.Name;
             animal.Type = viewModel.Type;
             animal.Price = viewModel.Price;
-            animal.ImageUrl = viewModel.ImageUrl;
+
+            ModelState.Remove("ImageUrl");
+            ModelState.Remove("ImageFile");
+
+            if (!ModelState.IsValid)
+            {
+                viewModel.ImageUrl = animal.ImageUrl;
+                return View(viewModel);
+            }
 
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Animal updated successfully!";
-            return RedirectToAction("Index");  
+            TempData["SuccessMessage"] = $"{viewModel.Name} succesvol bijgewerkt!";
+            return RedirectToAction("Index");
         }
 
         [HttpGet]

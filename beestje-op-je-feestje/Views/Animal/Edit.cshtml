@@ -1,11 +1,12 @@
 ﻿@model beestje_op_je_feestje.ViewModels.AnimalViewModel
 
+
 <div class="container text-center">
     <h1 class="display-4">@Model.Name aanpassen</h1>
 
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <form method="post" asp-controller="Animal" asp-action="Edit" enctype="multipart/form-data" class="form-group mx-auto" style="max-width: 33%;">
-
+        <input type="hidden" asp-for="Id" />
         <div class="mb-3">
             <label for="name" class="form-label">Naam</label>
             <input type="text" class="form-control" id="name" name="Name" placeholder="Vul hier een naam in" value="@Model.Name" required />
