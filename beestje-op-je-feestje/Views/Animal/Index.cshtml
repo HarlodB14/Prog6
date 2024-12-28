@@ -1,0 +1,58 @@
+﻿<div class="container">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    <div class="row">
+        <div class="col">
+            <h1 class="display-4">Dieren</h1>
+        </div>
+        <div class="col text-end">
+            <a asp-controller="Animal" asp-action="Create">
+                <button type="button" class="btn btn-primary">Nieuwe dier aanmaken</button>
+            </a>
+        </div>
+    </div>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Naam</th>
+                <th scope="col">Type</th>
+                <th scope="col">Prijs</th>
+                <th scope="col">Afbeelding</th>
+                <th scope="col" class="text-center">Actie</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var animal in Model)
+            {
+                <tr>
+                    <th scope="row">@animal.Id</th>
+                    <td>@animal.Name</td>
+                    <td>@animal.Type</td>
+                    <td>€@animal.Price</td>
+                    <td>
+                        <img src="@animal.ImageUrl" alt="@animal.Name" class="img-fluid" style="max-height: 100px;" />
+                    </td>
+                    <td class="text-center">
+                        <div class="d-inline-flex">
+                            <form asp-controller="Animal" asp-action="Delete" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@animal.Id" />
+                                <button type="submit" class="btn btn-danger me-2">Verwijderen</button>
+                            </form>
+                            <form asp-controller="Animal" asp-action="Edit" method="get" class="d-inline">
+                                <input type="hidden" name="id" value="@animal.Id" />
+                                <button type="submit" class="btn btn-warning me-2">Bewerken</button>
+                            </form>
+                            <a asp-controller="Animal" asp-action="Detail" asp-route-id="@animal.Id" class="btn btn-info me-2">Info</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
