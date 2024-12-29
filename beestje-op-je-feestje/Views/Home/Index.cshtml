@@ -8,7 +8,18 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+@if (User.IsInRole("Klant"))
+{
+    <div class="container mt-5">
+        <div class="p-5 bg-light rounded shadow-sm">
+            <div class="text-center">
+                <h1 class="display-4 text-dark mb-4">Boek een beestje</h1>
+                <p class="lead text-muted">
+                    Welkom bij Beestje op een feestje (BOEF). Hier kun je een of meerdere van onze dieren boeken voor op jou feestje!
+                    Kies de dag van je feestje en volg de stappen om je beestje te boeken.
+                </p>
+            </div>
+        </div>
+    </div>
+}

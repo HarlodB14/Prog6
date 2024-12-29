@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using beestje_op_je_feestje.ViewModels
 @inject IAuthorizationService AuthorizationService
 <!DOCTYPE html>
 <html lang="en">
@@ -24,17 +25,33 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Animal" asp-action="Index">Dieren</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Animal" asp-action="Index">Dieren</a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
-                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-dark">Ingelogd als @User.Identity.Name</span>
+                            </li>
+                            <li class="nav-item">
+                                @using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { @class = "nav-item" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="nav-link text-dark btn btn-link">Logout</button>
+                                }
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

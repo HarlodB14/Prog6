@@ -48,11 +48,12 @@ namespace beestje_op_je_feestje.Controllers
             }
             return View(model);
         }
-
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            TempData["SuccessMessage"] = "Je bent succesvol uitgelogd.";
             return RedirectToAction("Index", "Home");
         }
     }
