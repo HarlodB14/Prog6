@@ -16,7 +16,7 @@ internal class Program
 
         builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
         {
-            options.SignIn.RequireConfirmedAccount = true;
+            options.SignIn.RequireConfirmedAccount = false;
         })
         .AddEntityFrameworkStores<AnimalPartyContext>()
         .AddDefaultTokenProviders();
@@ -74,8 +74,7 @@ internal class Program
             string email = "admin@boerderij.nl";
             string password = "Wachtwoord123!";
 
-            if (await userManager.FindByEmailAsync(email) == null)
-            {
+            if (await userManager.FindByEmailAsync(email) == null)            {
                 var user = new IdentityUser
                 {
                     UserName = email,
