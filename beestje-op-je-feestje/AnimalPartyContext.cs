@@ -1,7 +1,8 @@
 ﻿using beestje_op_je_feestje.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-public class AnimalPartyContext : DbContext
+public class AnimalPartyContext : IdentityDbContext
 {
     public DbSet<Animal> animals { get; set; }
 
@@ -12,8 +13,10 @@ public class AnimalPartyContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Animal>()
-            .HasKey(a => a.Id);  
+            .HasKey(a => a.Id);
     }
 
 

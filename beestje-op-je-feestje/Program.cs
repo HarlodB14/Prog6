@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 internal class Program
@@ -13,6 +14,14 @@ internal class Program
         builder.Services.AddDbContext<AnimalPartyContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+        builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = true;
+        })
+        .AddEntityFrameworkStores<AnimalPartyContext>()
+        .AddDefaultTokenProviders();
+
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -27,7 +36,7 @@ internal class Program
         app.UseStaticFiles();
 
         app.UseRouting();
-
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllerRoute(
