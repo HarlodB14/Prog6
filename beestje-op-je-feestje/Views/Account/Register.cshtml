@@ -1,0 +1,56 @@
+﻿<div class="container">
+    <div class="container my-5">
+        <h1 class="display-4 text-center mb-4">Beestje op je Feestje!</h1>
+        <h2 class="display-6 text-center mb-4">Vul hier uw inloggegevens in.</h2>
+        <div class="mobile row">
+            <div class="col-md-12 d-flex align-items-center justify-content-center">
+                <form asp-action="Register" asp-controller="Account" method="POST">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul>
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                            <li>@error.ErrorMessage</li>
+                                }
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    }
+                    <div class="mb-3">
+                        <label for="type" class="form-label">Type</label>
+                        <select class="form-select" id="Type" name="Type" required>
+                            <option value="">Selecteer een type klantenkaart</option>
+                            <option value="Silver">Zilver</option>
+                            <option value="Gold">Goud</option>
+                            <option value="Platinum">Jungledier</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label">Naam</label>
+                        <input type="text" class="form-control form-control-lg" name="Name" />
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control form-control-lg" name="Email" value="@Model?.Email" />
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label">Adres</label>
+                        <input type="text" class="form-control form-control-lg" name="Adress" />
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label">Telefoonnummer</label>
+                        <input type="tel" class="form-control form-control-lg" name="PhoneNumber" />
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="mb-4 d-flex justify-content-center">
+                        <input type="submit" class="btn btn-lg btn-primary" value="Registreren" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

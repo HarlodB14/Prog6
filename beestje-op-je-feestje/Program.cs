@@ -60,7 +60,7 @@ internal class Program
 
             // Create roles if they do not exist
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var roles = new[] { "admin", "klant" };
+            var roles = new[] { "admin", "customer" };
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))

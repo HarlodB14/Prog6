@@ -1,0 +1,62 @@
+﻿<div class="container">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    <div class="row">
+        <div class="col">
+            <h1 class="display-4">Accounts</h1>
+        </div>
+        <div class="col text-end">
+            <a asp-controller="Account" asp-action="Register">
+                <button type="button" class="btn btn-primary">Nieuwe Account aanmaken</button>
+            </a>
+        </div>
+    </div>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Naam</th>
+                <th scope="col">Type</th>
+                <th scope="col">Email-adres</th>
+                <th scope="col">Adres</th>
+                <th scope="col">Telefoonnummer</th>
+                <th scope="col" class="text-center">Actie</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+            }
+            @foreach (var account in Model)
+            {
+                <tr>
+                    <th scope="row">@index</th>
+                    <td>@account.UserName</td>
+                    <td>@account.DiscountType</td>
+                    <td>@account.Email</td>
+                    <td>@account.Address</td>
+                    <td>@account.PhoneNumber</td>
+                    <td class="text-center">
+                        <div class="d-inline-flex">
+                            <form asp-controller="Account" asp-action="Delete" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@account.Id" />
+                                <button type="submit" class="btn btn-danger me-2">Verwijderen</button>
+                            </form>
+                            <form asp-controller="Account" asp-action="Edit" method="get" class="d-inline">
+                                <input type="hidden" name="id" value="@account.Id" />
+                                <button type="submit" class="btn btn-warning me-2">Bewerken</button>
+                            </form>
+                            <a asp-controller="Account" asp-action="Detail" asp-route-id="@account.Id" class="btn btn-info me-2">Info</a>
+                        </div>
+                    </td>
+                </tr>
+                index++; 
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,6 +1,8 @@
-﻿using beestje_op_je_feestje.ViewModels;
+﻿using beestje_op_je_feestje.Models;
+using beestje_op_je_feestje.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace beestje_op_je_feestje.Controllers
 {
@@ -19,6 +21,37 @@ namespace beestje_op_je_feestje.Controllers
         public IActionResult Login()
         {
             return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var users = await _userManager.Users.ToListAsync();
+
+            var model = users.Select(user => new AccountViewModel
+            {
+                //Id = user.Id,
+                //Name = user.UserName, 
+                //DiscountType = user.DiscountType,
+                //Email = user.Email,
+                //Address = user.Address,
+                //PhoneNumber = user.PhoneNumber
+            }).ToList();
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Register(AccountViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                //usermanager nieuwe user laten aanmaken
+                //waardes van viewmodel assignenen aan user
+                //redirect naar index page van klanten
+
+            }
+            return View(model);
         }
 
         [HttpPost]
