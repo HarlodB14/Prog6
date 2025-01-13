@@ -36,11 +36,11 @@
             {
                 <tr>
                     <th scope="row">@index</th>
+                    <td>@account.i</td>
+                    <!--via Identity koppelen aan viewmodel-->
                     <td>@account.UserName</td>
-                    <td>@account.DiscountType</td>
                     <td>@account.Email</td>
-                    <td>@account.Address</td>
-                    <td>@account.PhoneNumber</td>
+                    <td>@account.DiscountType</td>
                     <td class="text-center">
                         <div class="d-inline-flex">
                             <form asp-controller="Account" asp-action="Delete" method="post" class="d-inline">

@@ -10,12 +10,14 @@ namespace beestje_op_je_feestje.Controllers
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private AnimalPartyContext _context;
 
 
-        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
+        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, AnimalPartyContext context)
         {
-            this._signInManager = signInManager;
-            this._userManager = userManager;
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _context = context;
         }
         [HttpGet]
         public IActionResult Login()
@@ -23,21 +25,25 @@ namespace beestje_op_je_feestje.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index(AccountViewModel model)
         {
-            var users = await _userManager.Users.ToListAsync();
+            //haal usergegvens op van account //TODO DAL laag laten doen
+            var accounts = _context.Accounts.ToList();
 
-            var model = users.Select(user => new AccountViewModel
+            foreach (Account account in accounts)
             {
-                //Id = user.Id,
-                //Name = user.UserName, 
-                //DiscountType = user.DiscountType,
-                //Email = user.Email,
-                //Address = user.Address,
-                //PhoneNumber = user.PhoneNumber
-            }).ToList();
+                account.Id = model.Id;
+                account.First_Name = model.First_name;
+                account.Last_Name = model.Last_name;
+                account.Email = model.Email;
+                account.PhoneNumber = model.PhoneNumber;
+                account.Street_Name = model.Street_Name;
+                account.Street_Number = model.Street_Number;
+                account.City = model.City;
+                account.DiscountType = model.discountType;
+            }
 
-            return View(model);
+            return View(accounts);
         }
 
 
