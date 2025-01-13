@@ -30,20 +30,14 @@ namespace beestje_op_je_feestje.Controllers
             //haal usergegvens op van account //TODO DAL laag laten doen
             var accounts = _context.Accounts.ToList();
 
-            foreach (Account account in accounts)
-            {
-                account.Id = model.Id;
-                account.First_Name = model.First_name;
-                account.Last_Name = model.Last_name;
-                account.Email = model.Email;
-                account.PhoneNumber = model.PhoneNumber;
-                account.Street_Name = model.Street_Name;
-                account.Street_Number = model.Street_Number;
-                account.City = model.City;
-                account.DiscountType = model.discountType;
-            }
-
             return View(accounts);
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+
+            return View();
         }
 
 
@@ -52,10 +46,44 @@ namespace beestje_op_je_feestje.Controllers
         {
             if (ModelState.IsValid)
             {
-                //usermanager nieuwe user laten aanmaken
-                //waardes van viewmodel assignenen aan user
-                //redirect naar index page van klanten
+                var user = new IdentityUser
+                {
+                    UserName = model.Email,
+                    NormalizedUserName = model.Email.ToUpper(),
+                    Email = model.Email,
+                    PhoneNumber = model.PhoneNumber,
+                };
+                var identityResult = await _userManager.CreateAsync(user);
 
+                //check of aanmaken is gelukt
+                if (!identityResult.Succeeded)
+                {
+                    foreach (var error in identityResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(model);
+                }
+
+                //account vullen voor adresgegegevens
+                var account = new Account
+                {
+                    Id = model.Id,
+                    First_Name = model.First_name,
+                    Last_Name = model.Last_name,
+                    Email = model.Email,
+                    PhoneNumber = model.PhoneNumber,
+                    Street_Name = model.Street_Name,
+                    Street_Number = model.Street_Number,
+                    City = model.City,
+                    DiscountType = model.DiscountType
+                };
+
+                _context.Accounts.Add(account);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Nieuwe klant met naam: " + model.Email + " aangemaakt!";
+                return RedirectToAction("Index");
             }
             return View(model);
         }
