@@ -15,11 +15,12 @@ namespace beestje_op_je_feestje.ViewModels
         public int Street_Number { get; set; }
         [Required]
         public string City { get; set; }
+        [Required]
         public string DiscountType { get; set; }
         [EmailAddress]
-        public string Email { get; set; }
+        public string? Email { get; set; }
         [Phone]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
     }
 }

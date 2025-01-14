@@ -3,6 +3,7 @@ using beestje_op_je_feestje.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace beestje_op_je_feestje.Controllers
 {
@@ -48,12 +49,15 @@ namespace beestje_op_je_feestje.Controllers
             {
                 var user = new IdentityUser
                 {
-                    UserName = model.Email,
-                    NormalizedUserName = model.Email.ToUpper(),
+                    //email generen als die niet ingevuld wordt
+                    UserName = string.IsNullOrEmpty(model.Email)
+                    ? $"{model.First_name.ToLower()}.{model.Last_name.ToLower()}.{Guid.NewGuid().ToString().Substring(0, 8)}"
+                      : model.Email,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                 };
-                var identityResult = await _userManager.CreateAsync(user);
+                var password = PasswordGenerator();
+                var identityResult = await _userManager.CreateAsync(user, password);
 
                 //check of aanmaken is gelukt
                 if (!identityResult.Succeeded)
@@ -83,6 +87,7 @@ namespace beestje_op_je_feestje.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Nieuwe klant met naam: " + model.Email + " aangemaakt!";
+                TempData["GeneratedPassword"] = password;
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -115,6 +120,7 @@ namespace beestje_op_je_feestje.Controllers
             }
             return View(model);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -122,6 +128,32 @@ namespace beestje_op_je_feestje.Controllers
             await _signInManager.SignOutAsync();
             TempData["SuccessMessage"] = "Je bent succesvol uitgelogd.";
             return RedirectToAction("Index", "Home");
+        }
+
+        public static string PasswordGenerator()
+        {
+            int stringLength = 8;
+            var lowercase = "abcdefghijklmnopqrstuvwxyz";
+            var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            var digits = "0123456789";
+            var specialCharacters = "!@#$%";
+            var allCharacters = lowercase + uppercase + digits + specialCharacters;
+
+            var output = new StringBuilder();
+            var random = new Random();
+
+            //minimale eisen
+            output.Append(lowercase[random.Next(lowercase.Length)]);
+            output.Append(uppercase[random.Next(uppercase.Length)]);
+            output.Append(digits[random.Next(digits.Length)]);
+            output.Append(specialCharacters[random.Next(specialCharacters.Length)]);
+
+            for (int i = 4; i < stringLength; i++)
+            {
+                output.Append(allCharacters[random.Next(allCharacters.Length)]);
+            }
+
+            return new string(output.ToString().OrderBy(c => random.Next()).ToArray());
         }
     }
 }

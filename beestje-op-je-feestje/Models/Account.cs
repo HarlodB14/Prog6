@@ -19,7 +19,6 @@ namespace beestje_op_je_feestje.Models
         public string City { get; set; }
         public string DiscountType { get; set; }
         public string? Email { get; set; }
-        [Required]
         public string? PhoneNumber { get; set; }
     }
 }

@@ -6,6 +6,12 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
+    @if (TempData["GeneratedPassword"] != null)
+    {
+        <div class="alert alert-success">
+            Het wachtwoord voor dit account is: @TempData["GeneratedPassword"]
+        </div>
+    }
     <div class="row">
         <div class="col">
             <h1 class="display-4">Accounts</h1>
@@ -53,7 +59,7 @@
                         </div>
                     </td>
                 </tr>
-                index++; 
+                index++;
             }
         </tbody>
     </table>
