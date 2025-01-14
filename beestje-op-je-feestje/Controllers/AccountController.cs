@@ -93,6 +93,31 @@ namespace beestje_op_je_feestje.Controllers
             return View(model);
         }
 
+        public IActionResult Detail(int id)
+        {
+            var account = _context.Accounts
+                .Where(a => a.Id == id)
+                .Select(a => new AccountViewModel
+                {
+                    First_name = a.First_Name,
+                    Last_name = a.Last_Name,
+                    Email = a.Email,
+                    PhoneNumber = a.PhoneNumber,
+                    Street_Name = a.Street_Name,
+                    Street_Number = a.Street_Number,
+                    City = a.City,
+                    DiscountType = a.DiscountType
+                })
+                .FirstOrDefault();
+
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            return View(account);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
