@@ -51,7 +51,7 @@ namespace beestje_op_je_feestje.Controllers
                 {
                     //email generen als die niet ingevuld wordt
                     UserName = string.IsNullOrEmpty(model.Email)
-                    ? $"{model.First_name.ToLower()}.{model.Last_name.ToLower()}.{Guid.NewGuid().ToString().Substring(0, 8)}"
+                    ? $"{model.First_Name.ToLower()}.{model.Last_Name.ToLower()}.{Guid.NewGuid().ToString().Substring(0, 8)}"
                       : model.Email,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
@@ -73,8 +73,8 @@ namespace beestje_op_je_feestje.Controllers
                 var account = new Account
                 {
                     Id = model.Id,
-                    First_Name = model.First_name,
-                    Last_Name = model.Last_name,
+                    First_Name = model.First_Name,
+                    Last_Name = model.Last_Name,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     Street_Name = model.Street_Name,
@@ -93,14 +93,71 @@ namespace beestje_op_je_feestje.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var account = _context.Accounts.FirstOrDefault(a => a.Id == id);
+            if (account == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var viewModel = new AccountViewModel
+                {
+                    Id = account.Id,
+                    First_Name = account.First_Name,
+                    Last_Name = account.Last_Name,
+                    Email = account.Email,
+                    PhoneNumber = account.PhoneNumber,
+                    Street_Name = account.Street_Name,
+                    Street_Number = account.Street_Number,
+                    City = account.City,
+                    DiscountType = account.DiscountType
+                };
+                return View(viewModel);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Edit(AccountViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var account = _context.Accounts.FirstOrDefault(a => a.Id == model.Id);
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            account.Id = model.Id;
+            account.First_Name = model.First_Name;
+            account.Last_Name = model.Last_Name;
+            account.Email = model.Email;
+            account.PhoneNumber = model.PhoneNumber;
+            account.Street_Name = model.Street_Name;
+            account.Street_Number = model.Street_Number;
+            account.City = model.City;
+            account.DiscountType = model.DiscountType;
+
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = "Accountgegevens zijn succesvol bijgewerkt!";
+
+            return RedirectToAction("Index", "Account");
+        }
+
         public IActionResult Detail(int id)
         {
             var account = _context.Accounts
                 .Where(a => a.Id == id)
                 .Select(a => new AccountViewModel
                 {
-                    First_name = a.First_Name,
-                    Last_name = a.Last_Name,
+                    First_Name = a.First_Name,
+                    Last_Name = a.Last_Name,
                     Email = a.Email,
                     PhoneNumber = a.PhoneNumber,
                     Street_Name = a.Street_Name,

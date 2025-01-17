@@ -6,9 +6,9 @@ namespace beestje_op_je_feestje.ViewModels
     {
         public int Id { get; set; }
         [Required]
-        public string First_name { get; set; }
+        public string First_Name { get; set; }
         [Required]
-        public string Last_name { get; set; }
+        public string Last_Name { get; set; }
         [Required]
         public string Street_Name { get; set; }
         [Required]
@@ -21,6 +21,6 @@ namespace beestje_op_je_feestje.ViewModels
         public string? Email { get; set; }
         [Phone]
         public string? PhoneNumber { get; set; }
-
+        public List<string> DiscountTypes { get; set; } = new List<string> { "Silver", "Gold", "Platinum" };
     }
 }

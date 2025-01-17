@@ -1,0 +1,79 @@
+﻿@model beestje_op_je_feestje.ViewModels.AccountViewModel
+<div class="container">
+    <div class="container my-5">
+        <h1 class="display-4 text-center mb-4">Accountgegevens aanpassen</h1>
+        <h2 class="display-6 text-center mb-4">Vul hier de klantgegevens in</h2>
+        <div class="mobile row">
+            <div class="col-md-8 offset-md-2">
+                <form asp-action="Edit" asp-controller="Account" method="post" class="shadow p-4 rounded bg-light">
+                    <input type="hidden" asp-for="Id" />
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <ul>
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    <fieldset class="mb-4">
+                        <legend class="text-primary">Klantgegevens</legend>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="type" class="form-label">Type klantenkaart</label>
+                                <select class="form-select" asp-for="DiscountType" asp-items="@(new SelectList(Model.DiscountTypes))" required>
+                                    <option value="">Selecteer een type klantenkaart</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Voornaam*</label>
+                                <input type="text" class="form-control" name="First_Name" placeholder="Voer een voornaam in" value="@Model.First_Name" required/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Achternaam*</label>
+                                <input type="text" class="form-control" name="Last_Name" placeholder="Voer een achternaam in" value="@Model.Last_Name" required/>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Emailadres</label>
+                                <input type="email" class="form-control" name="Email" placeholder="Voer een emailadres in" value="@Model?.Email" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Telefoonnummer</label>
+                                <input type="tel" class="form-control" name="PhoneNumber" placeholder="Voer een telefoonnummer in" value="@Model?.PhoneNumber" />
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="mb-4">
+                        <legend class="text-primary">Adresgegevens</legend>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Straatnaam*</label>
+                                <input type="text" class="form-control" name="Street_Name" placeholder="Voer een straatnaam in" value="@Model.Street_Name" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Huisnummer*</label>
+                                <input type="number" class="form-control" name="Street_Number" placeholder="Voer een huisnummer in" value="@Model.Street_Number" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Woonplaats*</label>
+                                <input type="text" class="form-control" name="City" placeholder="Voer een woonplaats in" value="@Model.City" />
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-lg btn-primary">Wijzigingen opslaan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
