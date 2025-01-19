@@ -47,10 +47,6 @@
                     <td>@account.DiscountType</td>
                     <td class="text-center">
                         <div class="d-inline-flex">
-                            <form asp-controller="Account" asp-action="Delete" method="post" class="d-inline">
-                                <input type="hidden" name="id" value="@account.Id" />
-                                <button type="submit" class="btn btn-danger me-2">Verwijderen</button>
-                            </form>
                             <form asp-controller="Account" asp-action="Edit" method="get" class="d-inline">
                                 <input type="hidden" name="id" value="@account.Id" />
                                 <button type="submit" class="btn btn-warning me-2">Bewerken</button>
