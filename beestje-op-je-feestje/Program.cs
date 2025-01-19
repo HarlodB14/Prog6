@@ -1,3 +1,4 @@
+using beestje_op_je_feestje.DAL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,8 @@ internal class Program
         .AddEntityFrameworkStores<AnimalPartyContext>()
         .AddDefaultTokenProviders();
 
+        builder.Services.AddScoped<AccountRepo>();
+        builder.Services.AddScoped<AnimalRepo>();
 
         var app = builder.Build();
 
@@ -74,7 +77,8 @@ internal class Program
             string email = "admin@boerderij.nl";
             string password = "Wachtwoord123!";
 
-            if (await userManager.FindByEmailAsync(email) == null)            {
+            if (await userManager.FindByEmailAsync(email) == null)
+            {
                 var user = new IdentityUser
                 {
                     UserName = email,

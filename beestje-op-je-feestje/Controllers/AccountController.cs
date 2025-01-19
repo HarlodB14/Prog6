@@ -1,4 +1,5 @@
-﻿using beestje_op_je_feestje.Models;
+﻿using beestje_op_je_feestje.DAL;
+using beestje_op_je_feestje.Models;
 using beestje_op_je_feestje.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +12,14 @@ namespace beestje_op_je_feestje.Controllers
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
-        private AnimalPartyContext _context;
+        private readonly AccountRepo _accountRepo;
 
 
-        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, AnimalPartyContext context)
+        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, AccountRepo repository)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _context = context;
+            _accountRepo = repository;
         }
         [HttpGet]
         public IActionResult Login()
@@ -29,7 +30,7 @@ namespace beestje_op_je_feestje.Controllers
         public IActionResult Index(AccountViewModel model)
         {
             //haal usergegvens op van account //TODO DAL laag laten doen
-            var accounts = _context.Accounts.ToList();
+            var accounts = _accountRepo.GetAllAccounts();
 
             return View(accounts);
         }
@@ -83,8 +84,8 @@ namespace beestje_op_je_feestje.Controllers
                     DiscountType = model.DiscountType
                 };
 
-                _context.Accounts.Add(account);
-                await _context.SaveChangesAsync();
+                _accountRepo.InsertNewAccount(account);
+
 
                 TempData["SuccessMessage"] = "Nieuwe klant met naam: " + model.Email + " aangemaakt!";
                 TempData["GeneratedPassword"] = password;
@@ -96,7 +97,7 @@ namespace beestje_op_je_feestje.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var account = _context.Accounts.FirstOrDefault(a => a.Id == id);
+            var account = _accountRepo.GetAccountById(id);
             if (account == null)
             {
                 return NotFound();
@@ -120,14 +121,15 @@ namespace beestje_op_je_feestje.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(AccountViewModel model)
+        [HttpPost]
+        public async Task<IActionResult> Edit(AccountViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var account = _context.Accounts.FirstOrDefault(a => a.Id == model.Id);
+            var account = _accountRepo.GetAccountById(model.Id);
             if (account == null)
             {
                 return NotFound();
@@ -143,7 +145,7 @@ namespace beestje_op_je_feestje.Controllers
             account.City = model.City;
             account.DiscountType = model.DiscountType;
 
-            _context.SaveChanges();
+            await _accountRepo.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Accountgegevens zijn succesvol bijgewerkt!";
 
@@ -152,27 +154,26 @@ namespace beestje_op_je_feestje.Controllers
 
         public IActionResult Detail(int id)
         {
-            var account = _context.Accounts
-                .Where(a => a.Id == id)
-                .Select(a => new AccountViewModel
-                {
-                    First_Name = a.First_Name,
-                    Last_Name = a.Last_Name,
-                    Email = a.Email,
-                    PhoneNumber = a.PhoneNumber,
-                    Street_Name = a.Street_Name,
-                    Street_Number = a.Street_Number,
-                    City = a.City,
-                    DiscountType = a.DiscountType
-                })
-                .FirstOrDefault();
-
+            var account = _accountRepo.GetAccountById(id);
             if (account == null)
             {
                 return NotFound();
             }
 
-            return View(account);
+            var accountViewModel = new AccountViewModel
+            {
+                Id = account.Id,
+                First_Name = account.First_Name,
+                Last_Name = account.Last_Name,
+                Email = account.Email,
+                PhoneNumber = account.PhoneNumber,
+                Street_Name = account.Street_Name,
+                Street_Number = account.Street_Number,
+                City = account.City,
+                DiscountType = account.DiscountType
+            };
+
+            return View(accountViewModel);
         }
 
         [HttpPost]
