@@ -22,7 +22,7 @@ namespace beestje_op_je_feestje.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var animals = _context.animals.ToList();
+            var animals = _context.Animals.ToList();
             return View(animals);
         }
         [HttpGet]
@@ -48,7 +48,7 @@ namespace beestje_op_je_feestje.Controllers
                 ImageUrl = viewModel.ImageUrl
             };
 
-            _context.animals.Add(animal);
+            _context.Animals.Add(animal);
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = animal.Name + " is succesvol toegevoegd!";
@@ -81,7 +81,7 @@ namespace beestje_op_je_feestje.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var animal = _context.animals.FirstOrDefault(a => a.Id == id);
+            var animal = _context.Animals.FirstOrDefault(a => a.Id == id);
             if (animal == null)
             {
                 return NotFound();
@@ -102,7 +102,7 @@ namespace beestje_op_je_feestje.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(AnimalViewModel viewModel, IFormFile imageFile)
         {
-            var animal = _context.animals.FirstOrDefault(a => a.Id == viewModel.Id);
+            var animal = _context.Animals.FirstOrDefault(a => a.Id == viewModel.Id);
             if (animal == null)
             {
                 return NotFound();
@@ -140,7 +140,7 @@ namespace beestje_op_je_feestje.Controllers
         [HttpGet]
         public IActionResult Detail(int id)
         {
-            var animal = _context.animals
+            var animal = _context.Animals
                 .Where(a => a.Id == id)
                 .Select(a => new AnimalViewModel
                 {
@@ -163,17 +163,17 @@ namespace beestje_op_je_feestje.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            var animal = _context.animals.FirstOrDefault(a => a.Id == id);
+            var animal = _context.Animals.FirstOrDefault(a => a.Id == id);
             if (animal == null)
             {
                 TempData["ErrorMessage"] = "Dier niet gevonden!";
                 return RedirectToAction("Index");
             }
 
-            _context.animals.Remove(animal);
+            _context.Animals.Remove(animal);
             _context.SaveChanges();
 
-            if (!_context.animals.Any())
+            if (!_context.Animals.Any())
             {
                 _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT ('animals', RESEED, 0)");
             }

@@ -1,0 +1,38 @@
+﻿<div class="container">
+    <div class="container my-5">
+        <h1 class="display-4 text-center mb-4">Beestje op je Feestje!</h1>
+        <h2 class="display-6 text-center mb-4">Vul hier uw inloggegevens in.</h2>
+        <div class="mobile row">
+            <div class="col-md-12 d-flex align-items-center justify-content-center">
+                <form asp-action="Login" method="POST">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <ul>
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <div class="form-group mb-4">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control form-control-lg" name="Email" value="@Model?.Email" />
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label">Wachtwoord</label>
+                        <input type="password" class="form-control form-control-lg" name="Password" />
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="mb-4 d-flex justify-content-center">
+                        <input type="submit" class="btn btn-lg btn-primary" value="Inloggen" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

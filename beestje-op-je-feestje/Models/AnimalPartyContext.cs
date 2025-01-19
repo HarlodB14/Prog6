@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 public class AnimalPartyContext : IdentityDbContext
 {
-    public DbSet<Animal> animals { get; set; }
+    public DbSet<Animal> Animals { get; set; }
+    public DbSet<Account> Accounts { get; set; }
 
     public AnimalPartyContext(DbContextOptions options) : base(options)
     {

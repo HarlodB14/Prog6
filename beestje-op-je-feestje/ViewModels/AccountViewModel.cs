@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace beestje_op_je_feestje.Models
+namespace beestje_op_je_feestje.ViewModels
 {
-    public class Account
+    public class AccountViewModel
     {
-        [Key]
         public int Id { get; set; }
         [Required]
         public string First_Name { get; set; }
@@ -17,8 +15,12 @@ namespace beestje_op_je_feestje.Models
         public int Street_Number { get; set; }
         [Required]
         public string City { get; set; }
+        [Required]
         public string DiscountType { get; set; }
+        [EmailAddress]
         public string? Email { get; set; }
+        [Phone]
         public string? PhoneNumber { get; set; }
+        public List<string> DiscountTypes { get; set; } = new List<string> { "Silver", "Gold", "Platinum" };
     }
 }
