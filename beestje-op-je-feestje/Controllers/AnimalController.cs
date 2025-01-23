@@ -49,8 +49,7 @@ namespace beestje_op_je_feestje.Controllers
                 ImageUrl = viewModel.ImageUrl
             };
 
-            _animalrepo.InsertNewAnimalAsync(animal);
-            await _animalrepo.SaveChangesAsync();
+            await _animalrepo.InsertNewAnimalAsync(animal);
 
             TempData["SuccessMessage"] = animal.Name + " is succesvol toegevoegd!";
             return RedirectToAction("Index");

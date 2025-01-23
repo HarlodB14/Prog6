@@ -22,7 +22,7 @@ namespace beestje_op_je_feestje.DAL
         public async Task InsertNewAccount(Account account)
         {
             _animalPartyContext.Accounts.Add(account);
-            await _animalPartyContext.SaveChangesAsync();
+            await SaveChangesAsync();
         }
 
         public Account GetAccountById(int id)

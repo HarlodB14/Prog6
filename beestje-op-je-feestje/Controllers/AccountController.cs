@@ -84,10 +84,10 @@ namespace beestje_op_je_feestje.Controllers
                     DiscountType = model.DiscountType
                 };
 
-                _accountRepo.InsertNewAccount(account);
+                await _accountRepo.InsertNewAccount(account);
 
 
-                TempData["SuccessMessage"] = "Nieuwe klant met naam: " + model.Email + " aangemaakt!";
+                TempData["SuccessMessage"] = "Nieuwe klant met naam: " + model.First_Name + " " + model.Last_Name + " aangemaakt!";
                 TempData["GeneratedPassword"] = password;
                 return RedirectToAction("Index");
             }
