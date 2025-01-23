@@ -14,7 +14,7 @@ namespace beestje_op_je_feestje.Models
         [Required]
         public string Street_Name { get; set; }
         [Required]
-        public int Street_Number { get; set; }
+        public int? Street_Number { get; set; }
         [Required]
         public string City { get; set; }
         public string DiscountType { get; set; }
