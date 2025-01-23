@@ -2,24 +2,26 @@
 {
     public class Booking
     {
-        private List<Animal> animals { get; set; }
+        private List<Animal> Animals { get; set; }
+
+        public DateTime SelectedDate { get; set; }
 
         public int AmountOfAnimals { get; set; }
 
         public Booking()
         {
-            animals = new List<Animal>();
+            Animals = new List<Animal>();
         }
         public void AddAnimal(Animal animal)
         {
-            animals.Add(animal);
+            Animals.Add(animal);
         }
 
         public List<Animal> GetAllAnimals()
         {
-            return animals;
+            return Animals;
         }
 
-        public int GetAmountOfAnimals() => GetAllAnimals().Count;
+        public int GetAmountOfAnimals => Animals.Count;
     }
 }

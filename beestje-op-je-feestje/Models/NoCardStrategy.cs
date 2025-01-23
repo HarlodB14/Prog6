@@ -1,7 +1,8 @@
 ﻿
 using beestje_op_je_feestje.Models;
+using beestje_op_je_feestje.Models.Validation;
 
-internal class NoCardStrategy : IDiscountStrategy
+internal class NoCardStrategy : IValidation
 {
     public NoCardStrategy()
     {

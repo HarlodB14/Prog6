@@ -1,8 +1,9 @@
 ﻿using beestje_op_je_feestje.Models;
+using beestje_op_je_feestje.Models.Validation;
 
-public class DiscountCard : IDiscountStrategy
+public class DiscountCard : IValidation
 {
-    private readonly IDiscountStrategy _strategy;
+    private readonly IValidation _strategy;
 
     public DiscountCard(TypeEnum cardType)
     {
