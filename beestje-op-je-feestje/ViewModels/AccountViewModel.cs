@@ -21,6 +21,6 @@ namespace beestje_op_je_feestje.ViewModels
         public string? Email { get; set; }
         [Phone]
         public string? PhoneNumber { get; set; }
-        public List<string> DiscountTypes { get; set; } = new List<string> { "Silver", "Gold", "Platinum" };
+        public List<string> DiscountTypes { get; set; } = new List<string> { "Silver", "Gold", "Platinum","Nothing" };
     }
 }
