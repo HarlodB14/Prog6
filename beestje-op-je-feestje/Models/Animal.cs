@@ -10,7 +10,7 @@ namespace beestje_op_je_feestje.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        public Type Type { get; set; }
+        public TypeEnum Type { get; set; }
         [Required]
         public decimal Price { get; set; }
         [Required]
