@@ -24,6 +24,8 @@ internal class Program
 
         builder.Services.AddScoped<AccountRepo>();
         builder.Services.AddScoped<AnimalRepo>();
+        builder.Services.AddScoped<BookingRepo>();
+
 
         var app = builder.Build();
 

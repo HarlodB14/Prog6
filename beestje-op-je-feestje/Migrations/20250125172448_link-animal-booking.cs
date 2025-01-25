@@ -6,12 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace beestjeopjefeestje.Migrations
 {
     /// <inheritdoc />
-    public partial class changedbookingandanimal : Migration
+    public partial class linkanimalbooking : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Add columns for Animal model
             migrationBuilder.AddColumn<DateTime>(
                 name: "BookingDate",
                 table: "Animals",
@@ -22,8 +21,7 @@ namespace beestjeopjefeestje.Migrations
                 name: "BookingId",
                 table: "Animals",
                 type: "int",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "IsBooked",
@@ -32,7 +30,6 @@ namespace beestjeopjefeestje.Migrations
                 nullable: false,
                 defaultValue: false);
 
-            // Create the Booking table
             migrationBuilder.CreateTable(
                 name: "Bookings",
                 columns: table => new
@@ -46,36 +43,36 @@ namespace beestjeopjefeestje.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Bookings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Bookings_Accounts_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Accounts",
-                        principalColumn: "Id");
                 });
 
-            // If needed, add foreign key from Animal to Booking
+            migrationBuilder.CreateIndex(
+                name: "IX_Animals_BookingId",
+                table: "Animals",
+                column: "BookingId");
+
             migrationBuilder.AddForeignKey(
                 name: "FK_Animals_Bookings_BookingId",
                 table: "Animals",
                 column: "BookingId",
                 principalTable: "Bookings",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.SetNull);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            // Drop foreign key if it was added
             migrationBuilder.DropForeignKey(
                 name: "FK_Animals_Bookings_BookingId",
                 table: "Animals");
 
-            // Drop Booking table
             migrationBuilder.DropTable(
                 name: "Bookings");
 
-            // Drop columns for Animal model
+            migrationBuilder.DropIndex(
+                name: "IX_Animals_BookingId",
+                table: "Animals");
+
             migrationBuilder.DropColumn(
                 name: "BookingDate",
                 table: "Animals");

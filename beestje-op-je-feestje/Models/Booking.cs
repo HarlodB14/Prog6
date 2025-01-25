@@ -10,10 +10,9 @@ namespace beestje_op_je_feestje.Models
         [ForeignKey("Account")]
         public int? UserId { get; set; }
         public DateTime SelectedDate { get; set; }
-        public virtual ICollection<Animal> Animals { get; set; } 
+
+        [InverseProperty("Booking")]
+        public virtual ICollection<Animal>? Animals { get; set; } = new List<Animal>();
         public int AmountOfAnimals { get; set; }
-
-
-
     }
 }

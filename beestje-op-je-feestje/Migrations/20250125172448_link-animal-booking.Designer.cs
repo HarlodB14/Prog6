@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace beestjeopjefeestje.Migrations
 {
     [DbContext(typeof(AnimalPartyContext))]
-    [Migration("20250124193824_changed-booking-and-animal")]
-    partial class changedbookingandanimal
+    [Migration("20250125172448_link-animal-booking")]
+    partial class linkanimalbooking
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -275,7 +275,7 @@ namespace beestjeopjefeestje.Migrations
                     b.Property<DateTime?>("BookingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("BookingId")
+                    b.Property<int?>("BookingId")
                         .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
@@ -297,7 +297,31 @@ namespace beestjeopjefeestje.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BookingId");
+
                     b.ToTable("Animals");
+                });
+
+            modelBuilder.Entity("beestje_op_je_feestje.Models.Booking", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AmountOfAnimals")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SelectedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -349,6 +373,21 @@ namespace beestjeopjefeestje.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("beestje_op_je_feestje.Models.Animal", b =>
+                {
+                    b.HasOne("beestje_op_je_feestje.Models.Booking", "Booking")
+                        .WithMany("Animals")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("beestje_op_je_feestje.Models.Booking", b =>
+                {
+                    b.Navigation("Animals");
                 });
 #pragma warning restore 612, 618
         }
