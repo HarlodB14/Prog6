@@ -6,7 +6,6 @@
 <div class="container mt-4">
     <h1 class="text-center">@ViewData["Title"]</h1>
 
-    <!-- Step Indicator -->
     <ul class="nav nav-pills nav-fill mb-4">
         <li class="nav-item">
             <a class="nav-link active" href="#">1. Beestjes</a>
@@ -19,7 +18,6 @@
         </li>
     </ul>
 
-    <!-- Display Validation Summary -->
     @if (!ViewData.ModelState.IsValid)
     {
         <div class="alert alert-danger">
@@ -28,23 +26,18 @@
         </div>
     }
 
-    <!-- Main Content -->
     <div class="row">
-        <!-- Animal Selection on the Left -->
         <div class="col-lg-8">
             <form asp-action="BoekingDierenOverview" method="post">
                 <div class="row">
-                    <!-- Inside the form on the Animal Selection Left Side -->
                     @foreach (var animal in Model.Animals)
                     {
                         <div class="col-md-4 mb-3">
                             <div class="card">
-                                <!-- Image omitted for brevity -->
                                 <img src="~/images/@animal.ImageUrl" class="card-img-top animal-image" alt="@animal.Name">
                                 <div class="card-body text-center">
                                     <h5 class="card-title">@animal.Name</h5>
                                     <p class="card-text">@animal.Price$</p>
-                                    <!-- Add onchange event to submit form -->
                                     <input type="checkbox" name="SelectedIdAnimals" value="@animal.Id"
                                            class="form-check-input"
                                            onchange="this.form.submit();"
@@ -62,7 +55,6 @@
             </form>
         </div>
 
-        <!-- Booking Summary on the Right -->
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-header">

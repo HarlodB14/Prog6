@@ -82,7 +82,6 @@ namespace beestje_op_je_feestje.Controllers
             return View(model);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> BookingAnimalOverview(BookingViewModel model)
         {
@@ -105,7 +104,8 @@ namespace beestje_op_je_feestje.Controllers
 
                 await BookingRepo.UpdateAnimalIdAsync(model.Id, selectedAnimals.Select(a => a.Id).ToList());
 
-                return RedirectToAction("FillDetails_step_2", selectedAnimals);
+                string selectedAnimalIds = string.Join(",", selectedAnimals.Select(a => a.Id));
+                return RedirectToAction("FillDetails_step_2", new { bookingId = model.Id, selectedAnimalIds });
             }
 
             ModelState.AddModelError("", "Je moet minimaal één beestje selecteren om door te gaan.");
@@ -113,24 +113,37 @@ namespace beestje_op_je_feestje.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> FillDetails_step_2(ContactDetailsViewModel model, int bookingId, List<int> selectedAnimals)
+        public async Task<IActionResult> FillDetails_step_2(ContactDetailsViewModel model, string selectedAnimalIds)
         {
-            List<Animal> animals = await AnimalRepo.GetAnimalsByIdsAsync(selectedAnimals);
-            List<int> animalIds = animals.Select(a => a.Id).ToList();
+            // Convert comma-separated string back to List<int>
+            var animalIds = selectedAnimalIds.Split(',').Select(int.Parse).ToList();
+
+            List<Animal> animals = await AnimalRepo.GetAnimalsByIdsAsync(animalIds);
             model = new ContactDetailsViewModel
             {
-                Animals = animals,  
-                SelectedIdAnimals = animalIds 
+                Animals = animals,
+                SelectedIdAnimals = animalIds
             };
+
+            ModelState.Clear();
 
             return View(model);
         }
+        [HttpGet]
+        public IActionResult SubmitContactDetails()
+        {
+            return View();
+        }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitContactDetails(ContactDetailsViewModel model)
+        public async Task<IActionResult> SubmitContactDetails(ContactDetailsViewModel model, string selectedAnimalIds)
         {
+            var animalIds = selectedAnimalIds.Split(',').Select(int.Parse).ToList();
+
             if (!ModelState.IsValid)
             {
+                model.Animals = await AnimalRepo.GetAnimalsByIdsAsync(animalIds);
+                model.SelectedIdAnimals = animalIds; 
                 return View("FillDetails_Step_2", model);
             }
             Account account = new()
@@ -144,7 +157,8 @@ namespace beestje_op_je_feestje.Controllers
                 Email = model.Email
             };
             await AccountRepo.InsertNewAccount(account);
-            return RedirectToAction("Confirmation_Step3");
+
+            return RedirectToAction("SubmitContactDetails");
         }
 
 
