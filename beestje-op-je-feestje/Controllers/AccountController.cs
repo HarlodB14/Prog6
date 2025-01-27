@@ -29,7 +29,6 @@ namespace beestje_op_je_feestje.Controllers
         [HttpGet]
         public IActionResult Index(AccountViewModel model)
         {
-            //haal usergegvens op van account //TODO DAL laag laten doen
             var accounts = _accountRepo.GetAllAccounts();
 
             return View(accounts);
@@ -83,8 +82,10 @@ namespace beestje_op_je_feestje.Controllers
                     City = model.City,
                     DiscountType = model.DiscountType
                 };
-
+                //klantgegevens
                 await _accountRepo.InsertNewAccount(account);
+                //usergegevens voor in ASP Identity
+                await _accountRepo.InsertUserToIdentity(account,password);
 
 
                 TempData["SuccessMessage"] = "Nieuwe klant met naam: " + model.First_Name + " " + model.Last_Name + " aangemaakt!";

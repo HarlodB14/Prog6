@@ -1,0 +1,46 @@
+﻿@model beestje_op_je_feestje.ViewModels.ContactDetailsViewModel
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title">Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> @Model.First_Name @Model.Middle_Name @Model.Last_Name</p>
+                    <p><strong>Address:</strong> @Model.Street_Name @Model.Street_Number, @Model.City</p>
+                    <p><strong>Email:</strong> @Model.Email</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title">Booking Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Booking Date:</strong> @Model.SelectedDate.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Discount Type:</strong> @Model.DiscountType</p>
+
+                    <h5 class="mt-3">Selected Animals:</h5>
+                    <div class="row">
+                        @foreach (var animal in Model.Animals.Where(a => Model.SelectedIdAnimals.Contains(a.Id)))
+                        {
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <img src="@animal.ImageUrl" class="card-img-top" alt="@animal.Name" style="height: 150px; object-fit: cover;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@animal.Name</h5>
+                                        <p class="card-text">@animal.Type</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

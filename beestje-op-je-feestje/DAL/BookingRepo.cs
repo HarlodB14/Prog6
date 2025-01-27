@@ -49,5 +49,38 @@ namespace beestje_op_je_feestje.DAL
             await _animalPartyContext.SaveChangesAsync();
         }
 
+        public async Task UpdateAnimalIdAsync(int bookingId, List<int> animalIds)
+        {
+            var booking = await _animalPartyContext.Bookings
+                .Include(b => b.Animals) // Load the Animals collection
+                .FirstOrDefaultAsync(b => b.Id == bookingId) ?? throw new ArgumentException($"Boeking met ID {bookingId} niet gevonden.");
+
+            var validAnimals = await _animalPartyContext.Animals
+                .Where(a => animalIds.Contains(a.Id))
+                .ToListAsync();
+
+            if (validAnimals.Count != animalIds.Count)
+            {
+                throw new ArgumentException("Een of meer dieren-ID's zijn ongeldig.");
+            }
+
+            booking.Animals.Clear();
+
+            foreach (var animal in validAnimals)
+            {
+                booking.Animals.Add(animal);
+            }
+
+            _animalPartyContext.Bookings.Update(booking);
+            await _animalPartyContext.SaveChangesAsync();
+        }
+
+        public Booking GetBookingByDate(DateTime selectedDate)
+        {
+            var booking = _animalPartyContext.Bookings
+                .FirstOrDefault(b => b.SelectedDate.Date == selectedDate.Date);
+            return booking;
+        }
     }
+
 }
