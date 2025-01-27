@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace beestjeopjefeestje.Migrations
 {
     [DbContext(typeof(AnimalPartyContext))]
-    [Migration("20250126212658_added_middle_Name_Account")]
-    partial class addedmiddleNameAccount
+    [Migration("20250127150521_added_middle_Name")]
+    partial class addedmiddleName
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

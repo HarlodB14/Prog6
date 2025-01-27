@@ -5,7 +5,7 @@
 namespace beestjeopjefeestje.Migrations
 {
     /// <inheritdoc />
-    public partial class addedmiddleNameAccount : Migration
+    public partial class addedmiddleName : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,7 +14,7 @@ namespace beestjeopjefeestje.Migrations
                 name: "Middle_Name",
                 table: "Accounts",
                 type: "nvarchar(max)",
-                nullable: false,
+                nullable: true,
                 defaultValue: "");
         }
 

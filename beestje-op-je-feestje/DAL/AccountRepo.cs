@@ -19,7 +19,20 @@ namespace beestje_op_je_feestje.DAL
 
         public List<Account> GetAllAccounts()
         {
-            List<Account> accounts = _animalPartyContext.Accounts.ToList();
+            var accounts = _animalPartyContext.Accounts
+                .Select(a => new Account
+                {
+                    Id = a.Id,
+                    First_Name = a.First_Name ?? "Geen voornaam",
+                    Last_Name = a.Last_Name ?? "Geen Achternaam",
+                    Email = a.Email ?? "Geen email",
+                    PhoneNumber = a.PhoneNumber ?? "Geen Tel",
+                    Street_Name = a.Street_Name ?? "Geen straatnaam",
+                    Street_Number = a.Street_Number,
+                    City = a.City ?? "Unknown",
+                    DiscountType = a.DiscountType ?? "Geen"
+                }).ToList();
+
             return accounts;
         }
 
@@ -49,8 +62,49 @@ namespace beestje_op_je_feestje.DAL
 
         public Account GetAccountById(int id)
         {
-            var account = _animalPartyContext.Accounts.FirstOrDefault(a => a.Id == id);
+            var account = _animalPartyContext.Accounts
+                .Select(a => new Account
+                {
+                    Id = a.Id,
+                    First_Name = a.First_Name ?? "Leeg",
+                    Middle_Name = a.Middle_Name ?? "Leeg",
+                    Last_Name = a.Last_Name ?? "Leeg",
+                    Email = a.Email ?? "Leeg",
+                    PhoneNumber = a.PhoneNumber ?? "Leeg",
+                    Street_Name = a.Street_Name ?? "Leeg",
+                    Street_Number = a.Street_Number,
+                    City = a.City ?? "Leeg",
+                    DiscountType = a.DiscountType ?? "Leeg"
+                })
+                .FirstOrDefault(a => a.Id == id);
+
+            if (account == null)
+            {
+                throw new Exception($"Geen account gevonden met {id}");
+            }
+
             return account;
+        }
+
+        public Account GetAccountByEmail(string email)
+        {
+            var account = _animalPartyContext.Accounts
+                .Select(a => new Account
+                {
+                    Id = a.Id,
+                    First_Name = a.First_Name ?? "Leeg",
+                    Middle_Name = a.Middle_Name ?? "Leeg",
+                    Last_Name = a.Last_Name ?? "Leeg",
+                    Email = a.Email ?? "Leeg",  
+                    PhoneNumber = a.PhoneNumber ?? "Leeg",
+                    Street_Name = a.Street_Name ?? "Leeg",
+                    Street_Number = a.Street_Number,
+                    City = a.City ?? "Leg",
+                    DiscountType = a.DiscountType ?? "Leeg"
+                })
+                .FirstOrDefault(a => a.Email == email);
+
+            return account ?? throw new Exception($"Geen account gevonden met naam {email}");
         }
 
         public async Task SaveChangesAsync()

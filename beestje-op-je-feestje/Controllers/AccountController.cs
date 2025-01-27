@@ -22,8 +22,9 @@ namespace beestje_op_je_feestje.Controllers
             _accountRepo = repository;
         }
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl; 
             return View();
         }
         [HttpGet]
@@ -47,48 +48,49 @@ namespace beestje_op_je_feestje.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Check if email exists in both IdentityUser and Account
+                var emailExists = await _userManager.FindByEmailAsync(model.Email) != null ||
+                                  _accountRepo.GetAllAccounts().Any(a => a.Email == model.Email);
+
+                if (emailExists)
+                {
+                    ModelState.AddModelError("", "Een account met dit e-mailadres bestaat al.");
+                    return View(model);
+                }
+
                 var user = new IdentityUser
                 {
-                    //email generen als die niet ingevuld wordt
-                    UserName = string.IsNullOrEmpty(model.Email)
-                    ? $"{model.First_Name.ToLower()}.{model.Last_Name.ToLower()}.{Guid.NewGuid().ToString().Substring(0, 8)}"
-                      : model.Email,
+                    UserName = model.Email,
                     Email = model.Email,
-                    PhoneNumber = model.PhoneNumber,
+                    PhoneNumber = model.PhoneNumber
                 };
                 var password = PasswordGenerator();
                 var identityResult = await _userManager.CreateAsync(user, password);
 
-                //check of aanmaken is gelukt
                 if (!identityResult.Succeeded)
                 {
                     foreach (var error in identityResult.Errors)
                     {
-                        ModelState.AddModelError(string.Empty, error.Description);
+                        ModelState.AddModelError("", error.Description);
                     }
                     return View(model);
                 }
 
-                //account vullen voor adresgegegevens
                 var account = new Account
                 {
-                    Id = model.Id,
+                    Email = model.Email, 
                     First_Name = model.First_Name,
                     Last_Name = model.Last_Name,
-                    Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     Street_Name = model.Street_Name,
                     Street_Number = model.Street_Number,
                     City = model.City,
                     DiscountType = model.DiscountType
                 };
-                //klantgegevens
+
                 await _accountRepo.InsertNewAccount(account);
-                //usergegevens voor in ASP Identity
-                await _accountRepo.InsertUserToIdentity(account,password);
 
-
-                TempData["SuccessMessage"] = "Nieuwe klant met naam: " + model.First_Name + " " + model.Last_Name + " aangemaakt!";
+                TempData["SuccessMessage"] = $"Nieuwe klant met naam: {model.First_Name} {model.Last_Name} aangemaakt!";
                 TempData["GeneratedPassword"] = password;
                 return RedirectToAction("Index");
             }
@@ -153,6 +155,11 @@ namespace beestje_op_je_feestje.Controllers
             return RedirectToAction("Index", "Account");
         }
 
+        public async Task<IdentityUser> GetUserAsync()
+        {
+             return await  _signInManager.UserManager.GetUserAsync(User);
+        }
+
         public IActionResult Detail(int id)
         {
             var account = _accountRepo.GetAccountById(id);
@@ -178,7 +185,7 @@ namespace beestje_op_je_feestje.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -190,7 +197,36 @@ namespace beestje_op_je_feestje.Controllers
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         TempData["SuccessMessage"] = "Welkom " + user.UserName + "!";
-                        return RedirectToAction("Index", "Home");
+
+                        // Store the email in TempData
+                        TempData["UserEmail"] = model.Email;
+
+                        // Retrieve booking data from TempData
+                        var selectedIdAnimals = TempData["SelectedAnimalIds"] as string;
+                        var selectedDate = TempData["SelectedDate"] as string;
+
+                        // Ensure TempData is kept for further requests
+                        TempData.Keep("SelectedAnimalIds");
+                        TempData.Keep("SelectedDate");
+                        TempData.Keep("Email");
+
+                        if (!string.IsNullOrEmpty(selectedIdAnimals) &&
+                            !string.IsNullOrEmpty(selectedDate) &&
+                            DateTime.TryParse(selectedDate, out _))
+                        {
+                            // Redirect to SubmitContactDetails with the retrieved data
+                            return RedirectToAction("SubmitContactDetails", "Booking", new
+                            {
+                                email = model.Email,
+                                selectedIdAnimals,
+                                selectedDate
+                            });
+                        }
+                        else
+                        {
+                            TempData["ErrorMessage"] = "Geen boekingsgegevens gevonden. Log opnieuw in om verder te gaan.";
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
                     else
                     {
@@ -202,6 +238,7 @@ namespace beestje_op_je_feestje.Controllers
                     ModelState.AddModelError(string.Empty, "Gebruiker niet gevonden");
                 }
             }
+            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 

@@ -1,6 +1,7 @@
 ﻿using beestje_op_je_feestje.DAL;
 using beestje_op_je_feestje.Models;
 using beestje_op_je_feestje.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace beestje_op_je_feestje.Controllers
@@ -81,7 +82,6 @@ namespace beestje_op_je_feestje.Controllers
 
             return View(model);
         }
-
         [HttpPost]
         public async Task<IActionResult> BookingAnimalOverview(BookingViewModel model)
         {
@@ -104,22 +104,29 @@ namespace beestje_op_je_feestje.Controllers
 
                 await BookingRepo.UpdateAnimalIdAsync(model.Id, selectedAnimals.Select(a => a.Id).ToList());
 
-                string selectedAnimalIds = string.Join(",", selectedAnimals.Select(a => a.Id));
-                return RedirectToAction("FillDetails_step_2", new { bookingId = model.Id, selectedAnimalIds });
-            }
+                // Store SelectedAnimalIds in TempData
+                TempData["SelectedAnimalIds"] = string.Join(",", model.SelectedIdAnimals);
+                TempData["SelectedDate"] = string.Join(",", model.SelectedDate);
+
+                // Redirect with selectedAnimalIds as a route parameter
+                return RedirectToAction("FillDetails_step_2", new { bookingId = model.Id, selectedAnimalIds = string.Join(",", model.SelectedIdAnimals), model.SelectedDate});
+            } 
 
             ModelState.AddModelError("", "Je moet minimaal één beestje selecteren om door te gaan.");
             return View(model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> FillDetails_step_2(ContactDetailsViewModel model, string selectedAnimalIds)
+        public async Task<IActionResult> FillDetails_step_2(int bookingId, string selectedAnimalIds)
         {
-            // Convert comma-separated string back to List<int>
+            var tempDataAnimalIds = TempData["SelectedAnimalIds"] as string;
+            TempData.Keep("SelectedAnimalIds");
+
+
             var animalIds = selectedAnimalIds.Split(',').Select(int.Parse).ToList();
 
             List<Animal> animals = await AnimalRepo.GetAnimalsByIdsAsync(animalIds);
-            model = new ContactDetailsViewModel
+            var model = new ContactDetailsViewModel
             {
                 Animals = animals,
                 SelectedIdAnimals = animalIds
@@ -130,23 +137,56 @@ namespace beestje_op_je_feestje.Controllers
             return View(model);
         }
         [HttpGet]
-        public IActionResult SubmitContactDetails()
+        public async Task<IActionResult> SubmitContactDetails(string email, string selectedIdAnimals, string selectedDate)
         {
-            return View();
+            var animalIds = selectedIdAnimals.Split(',').Select(int.Parse).ToList();
+            var animals = await AnimalRepo.GetAnimalsByIdsAsync(animalIds);
+            if (string.IsNullOrEmpty(email))
+            {
+                email = TempData["Email"] as string;
+                TempData.Keep("Email");
+            }
+
+            if (string.IsNullOrEmpty(email))
+            {
+                ModelState.AddModelError("", "Emailadres niet gevonden. Probeer opnieuw in te loggen.");
+                return RedirectToAction("Login", "Account");
+            }
+            var viewModel = new ContactDetailsViewModel
+            {
+                Email = email,
+                SelectedIdAnimals = animalIds,
+                SelectedDate = DateTime.Parse(selectedDate),
+                Animals = animals
+            };
+            var user = AccountRepo.GetAccountByEmail(email);
+            if (user != null)
+            {
+                viewModel.First_Name = user.First_Name;
+                viewModel.Middle_Name = user.Middle_Name;
+                viewModel.Last_Name = user.Last_Name;
+                viewModel.Street_Name = user.Street_Name;
+                viewModel.Street_Number = user.Street_Number;
+                viewModel.City = user.City;
+                viewModel.Email = user.Email;
+            }
+
+            return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitContactDetails(ContactDetailsViewModel model, string selectedAnimalIds)
+        public async Task<IActionResult> SubmitContactDetails(ContactDetailsViewModel model, string selectedAnimalIds, string selectedDate)
         {
             var animalIds = selectedAnimalIds.Split(',').Select(int.Parse).ToList();
 
             if (!ModelState.IsValid)
             {
                 model.Animals = await AnimalRepo.GetAnimalsByIdsAsync(animalIds);
-                model.SelectedIdAnimals = animalIds; 
+                model.SelectedIdAnimals = animalIds;
                 return View("FillDetails_Step_2", model);
             }
-            Account account = new()
+
+            var account = new Account
             {
                 First_Name = model.First_Name,
                 Middle_Name = model.Middle_Name,
@@ -156,9 +196,27 @@ namespace beestje_op_je_feestje.Controllers
                 City = model.City,
                 Email = model.Email
             };
-            await AccountRepo.InsertNewAccount(account);
 
-            return RedirectToAction("SubmitContactDetails");
+            var existingAccount = AccountRepo.GetAccountByEmail(model.Email);
+            if (existingAccount == null)
+            {
+                await AccountRepo.InsertNewAccount(account);
+            }
+
+            // Retrieve the booking by selected date
+            var booking = BookingRepo.GetBookingByDate(DateTime.Parse(selectedDate));
+            if (booking == null)
+            {
+                ModelState.AddModelError("", "Geen boeking gevonden voor de geselecteerde datum.");
+                return View("FillDetails_Step_2", model);
+            }
+
+            booking.UserId = account.Id;
+            await BookingRepo.SaveChangesAsync();
+            await BookingRepo.UpdateAnimalIdAsync(booking.Id, animalIds);
+            await AnimalRepo.SaveChangesAsync();
+            TempData["BookingSuccessMessage"] = "Uw boeking is succesvol voltooid!";
+            return RedirectToAction("Index", "Home");
         }
 
 

@@ -262,7 +262,7 @@ namespace beestjeopjefeestje.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("beestje_op_je_feestje.Models.Animal", b =>
@@ -300,7 +300,7 @@ namespace beestjeopjefeestje.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.ToTable("Animals");
+                    b.ToTable("Animals", (string)null);
                 });
 
             modelBuilder.Entity("beestje_op_je_feestje.Models.Booking", b =>
@@ -322,7 +322,7 @@ namespace beestjeopjefeestje.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Bookings", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -34,7 +34,6 @@
                     <form asp-action="SubmitContactDetails" method="post">
                         <input type="hidden" name="selectedAnimalIds" value="@string.Join(",", Model.SelectedIdAnimals)" />
                         <div class="d-flex flex-wrap justify-content-between">
-                            <!-- Left side: Form fields -->
                             <div class="w-50 pe-3">
                                 <div class="form-group mb-2">
                                     <label asp-for="First_Name" class="form-label">Voornaam</label>
@@ -75,10 +74,9 @@
                                     <button type="submit" class="btn btn-primary btn-sm">Ga door naar stap 4</button>
                                 </div>
                             </div>
-                            <!-- Right side: Login section -->
                             <div class="w-50 text-center align-self-center">
                                 <h5 class="card-title mb-3">Heb je een account?</h5>
-                                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-sm">Inloggen</a>
+                                <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("SubmitContactDetails", "Booking")" class="btn btn-outline-primary btn-sm">Inloggen</a>
                             </div>
                         </div>
                     </form>
