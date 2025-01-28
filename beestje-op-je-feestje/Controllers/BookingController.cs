@@ -144,10 +144,9 @@ namespace beestje_op_je_feestje.Controllers
                 SelectedIdAnimals = animalIds,
                 SelectedDate = DateTime.Parse(selectedDate),
                 Animals = animals,
-                IsLoggedIn = isLoggedIn // Set IsLoggedIn based on the user's authentication status
+                IsLoggedIn = isLoggedIn 
             };
 
-            // If the user is logged in, populate their details
             if (isLoggedIn)
             {
                 var userAccount = AccountRepo.GetAccountByEmail(email);
@@ -183,7 +182,7 @@ namespace beestje_op_je_feestje.Controllers
                     return View("FillDetails_Step_2", model);
                 }
 
-                // validatie mag weg als account bestaat
+                // validatie = weg als die bestaat
                 ModelState.Remove(nameof(model.First_Name));
                 ModelState.Remove(nameof(model.Middle_Name));
                 ModelState.Remove(nameof(model.Last_Name));
@@ -197,7 +196,7 @@ namespace beestje_op_je_feestje.Controllers
             }
             else
             {
-                //nieuwe account aanmaken als die nog niet bestaat
+                //nieuwe aanmaken als die niet bestaat
                 if (!ModelState.IsValid)
                 {
                     model.Animals = await AnimalRepo.GetAnimalsByIdsAsync(animalIds);
@@ -227,7 +226,7 @@ namespace beestje_op_je_feestje.Controllers
                 }
             }
 
-            //boekingsgegevens bijwerken
+            // boeking bijwerken
             var booking = BookingRepo.GetBookingByDate(DateTime.Parse(selectedDate));
             if (booking == null)
             {
@@ -235,20 +234,20 @@ namespace beestje_op_je_feestje.Controllers
                 return View("FillDetails_Step_2", model);
             }
             booking.UserId = account.Id;
-            BookingRepo.UpdateBooking(booking);
-            await BookingRepo.SaveChangesAsync();
-            await BookingRepo.UpdateAnimalIdAsync(booking.Id, animalIds);
-            //dieren bijwerken met nieuwe boeking
+            booking.AmountOfAnimals = animalIds.Count; 
             foreach (var animalId in animalIds)
             {
                 var animal = AnimalRepo.GetAnimalById(animalId);
                 if (animal != null)
                 {
                     animal.IsBooked = true;
+                    animal.BookingDate = booking.SelectedDate; 
                     await AnimalRepo.UpdateAnimalAsync(animal);
                 }
             }
-            await AnimalRepo.SaveChangesAsync();
+
+            await BookingRepo.SaveChangesAsync();
+
             TempData["SuccessMessage"] = "Uw boeking is succesvol voltooid!";
             return RedirectToAction("Index", "Home");
         }
@@ -256,8 +255,11 @@ namespace beestje_op_je_feestje.Controllers
 
         private List<Animal> GetAvailableAnimals(DateTime selectedDate)
         {
-            var animals = AnimalRepo.GetAllAnimals().
-                Where(a => a.BookingDate != selectedDate && a.IsBooked == false).ToList();
+            var selectedDateOnly = selectedDate.Date;
+
+            var animals = AnimalRepo.GetAllAnimals()
+                .Where(a => (a.BookingDate == null || a.BookingDate.Value.Date != selectedDateOnly) && a.IsBooked == false)
+                .ToList();
 
             return animals;
         }
