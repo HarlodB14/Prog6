@@ -22,70 +22,77 @@
         </li>
     </ul>
 
-    <div class="row g-4">
-        <!-- Contact Information -->
-        <div class="col-lg-6">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white text-center" style="padding: 1rem; border-radius: 0.5rem;">
-                    <h5 class="mb-0 fw-bold" style="font-size: 1.5rem; letter-spacing: 0.05rem;">
-                        📝 Je Contactgegevens
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p>
-                        <strong>Naam:</strong> <span class="text-muted">Voornaam:</span> @Model.First_Name <br>
-                        <span class="text-muted">Tussenvoegsel:</span> @(string.IsNullOrWhiteSpace(Model.Middle_Name) ? "Leeg" : Model.Middle_Name) <br>
-                        <span class="text-muted">Achternaam:</span> @Model.Last_Name
-                    </p>
-                    <p>
-                        <strong>Adres:</strong><br>
-                        <span class="text-muted">Straatnaam:</span> @(string.IsNullOrWhiteSpace(Model.Street_Name) ? "Leeg" : Model.Street_Name) <br>
-                        <span class="text-muted">Huisnummer:</span> @(Model.Street_Number > 0 ? Model.Street_Number.ToString() : "Leeg") <br>
-                        <span class="text-muted">Woonplaats:</span> @(string.IsNullOrWhiteSpace(Model.City) ? "Leeg" : Model.City)
-                    </p>
-                    <p>
-                        <strong>Contact:</strong><br>
-                        <span class="text-muted">Email:</span> @(string.IsNullOrWhiteSpace(Model.Email) ? "Leeg" : Model.Email)
-                    </p>
-                </div>
-            </div>
-        </div>
+    <form asp-action="SubmitContactDetails" asp-controller="Booking" method="post">
+        <!-- Hidden fields for required data -->
+        <input type="hidden" name="selectedAnimalIds" value="@string.Join(",", Model.SelectedIdAnimals)" />
+        <input type="hidden" name="selectedDate" value="@Model.SelectedDate.ToString("yyyy-MM-dd")" />
 
-        <!-- Booking Information -->
-        <div class="col-lg-6">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-success text-white text-center" style="padding: 1rem; border-radius: 0.5rem;">
-                    <h5 class="mb-0 fw-bold" style="font-size: 1.5rem; letter-spacing: 0.05rem;">
-                        📅 Je Boeking
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Datum:</strong> @Model.SelectedDate.ToString("dd/MM/yyyy")</p>
-                    <p><strong>Kortingskaart:</strong> @Model.DiscountType</p>
-
-                    <h5 class="mt-4">Geselecteerde Beestjes</h5>
-                    <div class="row row-cols-2 g-3 mt-2">
-                        @foreach (var animal in Model.Animals.Where(a => Model.SelectedIdAnimals.Contains(a.Id)))
-                        {
-                            <div class="col">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <img src="@animal.ImageUrl" class="card-img-top rounded-top" alt="@animal.Name" style="height: 150px; object-fit: cover;">
-                                    <div class="card-body text-center d-flex flex-column justify-content-between">
-                                        <h6 class="card-title fw-bold">@animal.Name</h6>
-                                        <p class="card-text text-muted">@animal.Type</p>
-                                    </div>
-                                </div>
-                            </div>
-                        }
+        <div class="row g-4">
+            <!-- Contact Information -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white text-center" style="padding: 1rem; border-radius: 0.5rem;">
+                        <h5 class="mb-0 fw-bold" style="font-size: 1.5rem; letter-spacing: 0.05rem;">
+                            📝 Je Contactgegevens
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            <strong>Naam:</strong> <span class="text-muted">Voornaam:</span> @Model.First_Name <br>
+                            <span class="text-muted">Tussenvoegsel:</span> @(string.IsNullOrWhiteSpace(Model.Middle_Name) ? "Leeg" : Model.Middle_Name) <br>
+                            <span class="text-muted">Achternaam:</span> @Model.Last_Name
+                        </p>
+                        <p>
+                            <strong>Adres:</strong><br>
+                            <span class="text-muted">Straatnaam:</span> @(string.IsNullOrWhiteSpace(Model.Street_Name) ? "Leeg" : Model.Street_Name) <br>
+                            <span class="text-muted">Huisnummer:</span> @(Model.Street_Number > 0 ? Model.Street_Number.ToString() : "Leeg") <br>
+                            <span class="text-muted">Woonplaats:</span> @(string.IsNullOrWhiteSpace(Model.City) ? "Leeg" : Model.City)
+                        </p>
+                        <p>
+                            <strong>Contact:</strong><br>
+                            <span class="text-muted">Email:</span> @(string.IsNullOrWhiteSpace(Model.Email) ? "Leeg" : Model.Email)
+                        </p>
                     </div>
                 </div>
-                <div class="card-footer text-center" style="background-color: #f1f1f1;">
-                    <p class="mb-0 text-muted">Controleer je boekingsinformatie voordat je verder gaat.</p>
+            </div>
+
+            <!-- Booking Information -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white text-center" style="padding: 1rem; border-radius: 0.5rem;">
+                        <h5 class="mb-0 fw-bold" style="font-size: 1.5rem; letter-spacing: 0.05rem;">
+                            📅 Je Boeking
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Datum:</strong> @Model.SelectedDate.ToString("dd/MM/yyyy")</p>
+                        <p><strong>Kortingskaart:</strong> @Model.DiscountType</p>
+
+                        <h5 class="mt-4">Geselecteerde Beestjes</h5>
+                        <div class="row row-cols-2 g-3 mt-2">
+                            @foreach (var animal in Model.Animals.Where(a => Model.SelectedIdAnimals.Contains(a.Id)))
+                            {
+                                <div class="col">
+                                    <div class="card shadow-sm border-0 h-100">
+                                        <img src="@animal.ImageUrl" class="card-img-top rounded-top" alt="@animal.Name" style="height: 150px; object-fit: cover;">
+                                        <div class="card-body text-center d-flex flex-column justify-content-between">
+                                            <h6 class="card-title fw-bold">@animal.Name</h6>
+                                            <p class="card-text text-muted">@animal.Type</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer text-center" style="background-color: #f1f1f1;">
+                        <p class="mb-0 text-muted">Controleer je boekingsinformatie voordat je verder gaat.</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="text-center mt-4">
-        <a href="@Url.Action("Index", "Home")" class="btn btn-primary btn-lg">Bevestig boeking</a>
-    </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Bevestig boeking</button>
+        </div>
+    </form>
 </div>

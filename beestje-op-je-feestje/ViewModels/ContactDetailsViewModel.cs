@@ -23,5 +23,6 @@ namespace beestje_op_je_feestje.ViewModels
         public List<Animal> Animals { get; set; }
         public List<int> SelectedIdAnimals { get; set; }
         public string ImageUrl { get; set; }
+        public bool IsLoggedIn { get; set; }
     }
 }

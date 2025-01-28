@@ -46,13 +46,13 @@ namespace beestje_op_je_feestje.DAL
         {
             var user = new IdentityUser
             {
-                UserName = account.Email, 
+                UserName = account.Email,
                 NormalizedUserName = account.Email,
                 Email = account.Email,
                 NormalizedEmail = account.Email
             };
 
-            var result = await _userManager.CreateAsync(user,password);
+            var result = await _userManager.CreateAsync(user, password);
 
             if (!result.Succeeded)
             {
@@ -95,7 +95,7 @@ namespace beestje_op_je_feestje.DAL
                     First_Name = a.First_Name ?? "Leeg",
                     Middle_Name = a.Middle_Name ?? "Leeg",
                     Last_Name = a.Last_Name ?? "Leeg",
-                    Email = a.Email ?? "Leeg",  
+                    Email = a.Email ?? "Leeg",
                     PhoneNumber = a.PhoneNumber ?? "Leeg",
                     Street_Name = a.Street_Name ?? "Leeg",
                     Street_Number = a.Street_Number,
@@ -104,9 +104,8 @@ namespace beestje_op_je_feestje.DAL
                 })
                 .FirstOrDefault(a => a.Email == email);
 
-            return account ?? throw new Exception($"Geen account gevonden met naam {email}");
+            return account; // Return null if no account is found
         }
-
         public async Task SaveChangesAsync()
         {
             await _animalPartyContext.SaveChangesAsync();

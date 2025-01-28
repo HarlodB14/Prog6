@@ -124,7 +124,6 @@ namespace beestje_op_je_feestje.Controllers
         }
 
         [HttpPost]
-        [HttpPost]
         public async Task<IActionResult> Edit(AccountViewModel model)
         {
             if (!ModelState.IsValid)
@@ -201,30 +200,42 @@ namespace beestje_op_je_feestje.Controllers
                         // Store the email in TempData
                         TempData["UserEmail"] = model.Email;
 
-                        // Retrieve booking data from TempData
-                        var selectedIdAnimals = TempData["SelectedAnimalIds"] as string;
-                        var selectedDate = TempData["SelectedDate"] as string;
+                        // Check if the user is an admin
+                        var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
 
-                        // Ensure TempData is kept for further requests
-                        TempData.Keep("SelectedAnimalIds");
-                        TempData.Keep("SelectedDate");
-                        TempData.Keep("Email");
-
-                        if (!string.IsNullOrEmpty(selectedIdAnimals) &&
-                            !string.IsNullOrEmpty(selectedDate) &&
-                            DateTime.TryParse(selectedDate, out _))
+                        if (!isAdmin)
                         {
-                            // Redirect to SubmitContactDetails with the retrieved data
-                            return RedirectToAction("SubmitContactDetails", "Booking", new
+                            // Retrieve booking data from TempData
+                            var selectedIdAnimals = TempData["SelectedAnimalIds"] as string;
+                            var selectedDate = TempData["SelectedDate"] as string;
+
+                            // Ensure TempData is kept for further requests
+                            TempData.Keep("SelectedAnimalIds");
+                            TempData.Keep("IsLoggedIn");
+                            TempData.Keep("SelectedDate");
+                            TempData.Keep("Email");
+
+                            if (!string.IsNullOrEmpty(selectedIdAnimals) &&
+                                !string.IsNullOrEmpty(selectedDate) &&
+                                DateTime.TryParse(selectedDate, out _))
                             {
-                                email = model.Email,
-                                selectedIdAnimals,
-                                selectedDate
-                            });
+                                // Redirect to SubmitContactDetails with the retrieved data
+                                return RedirectToAction("SubmitContactDetails", "Booking", new
+                                {
+                                    IsLoggedIn = true,
+                                    email = model.Email,
+                                    selectedIdAnimals,
+                                    selectedDate
+                                });
+                            }
+                            else
+                            {
+                                TempData["ErrorMessage"] = "Geen boekingsgegevens gevonden. Log opnieuw in om verder te gaan.";
+                                return RedirectToAction("Index", "Home");
+                            }
                         }
                         else
                         {
-                            TempData["ErrorMessage"] = "Geen boekingsgegevens gevonden. Log opnieuw in om verder te gaan.";
                             return RedirectToAction("Index", "Home");
                         }
                     }

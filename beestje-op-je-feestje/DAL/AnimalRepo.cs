@@ -54,5 +54,10 @@ namespace beestje_op_je_feestje.DAL
         {
             await _animalPartyContext.SaveChangesAsync();
         }
+
+        public async Task UpdateAnimalAsync(Animal animal)
+        {
+            _animalPartyContext.Animals.Update(animal);
+        }
     }
 }
