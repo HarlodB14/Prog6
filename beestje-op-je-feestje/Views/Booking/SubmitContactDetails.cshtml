@@ -5,6 +5,13 @@
 }
 
 <div class="container mt-4">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
     <h1 class="text-center mb-4 fw-bold text-primary"
         style="font-size: 2rem; letter-spacing: 0.1rem; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);">
         @ViewData["Title"]
@@ -23,12 +30,10 @@
     </ul>
 
     <form asp-action="SubmitContactDetails" asp-controller="Booking" method="post">
-        <!-- Hidden fields for required data -->
         <input type="hidden" name="selectedAnimalIds" value="@string.Join(",", Model.SelectedIdAnimals)" />
         <input type="hidden" name="selectedDate" value="@Model.SelectedDate.ToString("yyyy-MM-dd")" />
 
         <div class="row g-4">
-            <!-- Contact Information -->
             <div class="col-lg-6">
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-primary text-white text-center" style="padding: 1rem; border-radius: 0.5rem;">
@@ -56,7 +61,6 @@
                 </div>
             </div>
 
-            <!-- Booking Information -->
             <div class="col-lg-6">
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-success text-white text-center" style="padding: 1rem; border-radius: 0.5rem;">
@@ -78,6 +82,7 @@
                                         <div class="card-body text-center d-flex flex-column justify-content-between">
                                             <h6 class="card-title fw-bold">@animal.Name</h6>
                                             <p class="card-text text-muted">@animal.Type</p>
+                                            <p class="card-text text-muted">€@animal.Price</p>
                                         </div>
                                     </div>
                                 </div>
@@ -85,7 +90,26 @@
                         </div>
                     </div>
                     <div class="card-footer text-center" style="background-color: #f1f1f1;">
-                        <p class="mb-0 text-muted">Controleer je boekingsinformatie voordat je verder gaat.</p>
+                        <h5 class="fw-bold">Prijs / Korting</h5>
+                        <ul class="list-unstyled">
+                            @foreach (var animal in Model.Animals.Where(a => Model.SelectedIdAnimals.Contains(a.Id)))
+                            {
+                                <li class="d-flex justify-content-between">
+                                    <span>@animal.Name</span>
+                                    <span>€@animal.Price</span>
+                                </li>
+                            }
+                            <!-- Add a new list item for the total cost -->
+                            @{
+                                var totalCost = Model.Animals
+                                .Where(a => Model.SelectedIdAnimals.Contains(a.Id))
+                                .Sum(a => a.Price);
+                            }
+                            <li class="d-flex justify-content-between fw-bold mt-2">
+                                <span>Totaal</span>
+                                <span>€@totalCost</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

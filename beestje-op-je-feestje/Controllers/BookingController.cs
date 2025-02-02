@@ -187,15 +187,16 @@ namespace beestje_op_je_feestje.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitContactDetails(ContactDetailsViewModel model, bool IsLoggedIn, string selectedIdAnimals, string selectedDate)
+        public async Task<IActionResult> SubmitContactDetails(ContactDetailsViewModel model, bool IsLoggedIn, string selectedAnimals, string selectedDate)
         {
-            if (string.IsNullOrEmpty(selectedIdAnimals))
+            selectedAnimals = HttpContext.Session.GetString("SelectedAnimals");
+            if (string.IsNullOrEmpty(selectedAnimals))
             {
                 ModelState.AddModelError("", "Geen dieren geselecteerd.");
                 return View("FillDetails_Step_2", model);
             }
 
-            var animalIds = selectedIdAnimals.Split(',').Select(int.Parse).ToList();
+            var animalIds = selectedAnimals.Split(',').Select(int.Parse).ToList();
             IsLoggedIn = User.Identity.IsAuthenticated;
             Account account = null;
 
@@ -277,8 +278,9 @@ namespace beestje_op_je_feestje.Controllers
             }
 
             await BookingRepo.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Boeking succesvol opgeslagen voor: " + booking.SelectedDate.ToString("yyyy-MM-dd") + "!";
 
-            return RedirectToAction("BookingAnimalOverview", new { selectedDate = booking.SelectedDate });
+            return RedirectToAction("Index", "Home");
         }
 
 
