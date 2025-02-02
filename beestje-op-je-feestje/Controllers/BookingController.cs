@@ -74,7 +74,7 @@ namespace beestje_op_je_feestje.Controllers
 
             var model = new BookingViewModel
             {
-                Id = booking.Id, 
+                Id = booking.Id,
                 SelectedDate = selectedDate,
                 Animals = GetAvailableAnimals(selectedDate)
             };
@@ -102,25 +102,40 @@ namespace beestje_op_je_feestje.Controllers
                 }
 
                 await BookingRepo.UpdateAnimalIdAsync(model.Id, selectedAnimals.Select(a => a.Id).ToList());
-                TempData["SelectedAnimalIds"] = string.Join(",", model.SelectedIdAnimals);
-                TempData["SelectedDate"] = string.Join(",", model.SelectedDate);
+                HttpContext.Session.SetString("SelectedAnimals", model.SelectedIdAnimals != null
+                                 ? string.Join(",", model.SelectedIdAnimals)
+                                 : string.Empty);
 
-                return RedirectToAction("FillDetails_step_2", new { bookingId = model.Id, selectedAnimalIds = string.Join(",", model.SelectedIdAnimals), model.SelectedDate});
-            } 
+                HttpContext.Session.SetString("SelectedDate", model.SelectedDate.ToString());
+
+                return RedirectToAction("FillDetails_step_2", new
+                {
+                    bookingId = model.Id,
+                    selectedAnimalIds = model.SelectedIdAnimals != null ? string.Join(",", model.SelectedIdAnimals) : string.Empty,
+                    selectedDate = model.SelectedDate.ToString("yyyy-MM-dd")
+                });
+            }
 
             ModelState.AddModelError("", "Je moet minimaal één beestje selecteren om door te gaan.");
             return View(model);
         }
-
         [HttpGet]
         public async Task<IActionResult> FillDetails_step_2(int bookingId, string selectedAnimalIds)
         {
-            var tempDataAnimalIds = TempData["SelectedAnimalIds"] as string;
-            TempData.Keep("SelectedAnimalIds");
+            var selectedAnimals = HttpContext.Session.GetString("SelectedAnimals");
 
+            if (string.IsNullOrEmpty(selectedAnimalIds) && !string.IsNullOrEmpty(selectedAnimals))
+            {
+                selectedAnimalIds = selectedAnimals;
+            }
+
+            if (string.IsNullOrEmpty(selectedAnimalIds))
+            {
+                ModelState.AddModelError("", "Geen dieren geselecteerd.");
+                return RedirectToAction("BookingAnimalOverview");
+            }
 
             var animalIds = selectedAnimalIds.Split(',').Select(int.Parse).ToList();
-
             List<Animal> animals = await AnimalRepo.GetAnimalsByIdsAsync(animalIds);
             var model = new ContactDetailsViewModel
             {
@@ -128,15 +143,21 @@ namespace beestje_op_je_feestje.Controllers
                 SelectedIdAnimals = animalIds
             };
 
-            ModelState.Clear();
-
             return View(model);
         }
         [HttpGet]
-        public async Task<IActionResult> SubmitContactDetails(string email, string selectedIdAnimals, string selectedDate)
+        public async Task<IActionResult> SubmitContactDetails(string email, string selectedAnimals, string selectedDate)
         {
+            selectedAnimals = HttpContext.Session.GetString("SelectedAnimals");
+
+            if (string.IsNullOrEmpty(selectedAnimals))
+            {
+                ModelState.AddModelError("", "Geen dieren geselecteerd.");
+                return RedirectToAction("FillDetails_step_2");
+            }
+
             var isLoggedIn = User.Identity.IsAuthenticated;
-            var animalIds = selectedIdAnimals.Split(',').Select(int.Parse).ToList();
+            var animalIds = selectedAnimals.Split(',').Select(int.Parse).ToList();
             var animals = await AnimalRepo.GetAnimalsByIdsAsync(animalIds);
             var viewModel = new ContactDetailsViewModel
             {
@@ -144,7 +165,7 @@ namespace beestje_op_je_feestje.Controllers
                 SelectedIdAnimals = animalIds,
                 SelectedDate = DateTime.Parse(selectedDate),
                 Animals = animals,
-                IsLoggedIn = isLoggedIn 
+                IsLoggedIn = isLoggedIn
             };
 
             if (isLoggedIn)
@@ -166,9 +187,15 @@ namespace beestje_op_je_feestje.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitContactDetails(ContactDetailsViewModel model, bool IsLoggedIn, string selectedAnimalIds, string selectedDate)
+        public async Task<IActionResult> SubmitContactDetails(ContactDetailsViewModel model, bool IsLoggedIn, string selectedIdAnimals, string selectedDate)
         {
-            var animalIds = selectedAnimalIds.Split(',').Select(int.Parse).ToList();
+            if (string.IsNullOrEmpty(selectedIdAnimals))
+            {
+                ModelState.AddModelError("", "Geen dieren geselecteerd.");
+                return View("FillDetails_Step_2", model);
+            }
+
+            var animalIds = selectedIdAnimals.Split(',').Select(int.Parse).ToList();
             IsLoggedIn = User.Identity.IsAuthenticated;
             Account account = null;
 
@@ -182,7 +209,7 @@ namespace beestje_op_je_feestje.Controllers
                     return View("FillDetails_Step_2", model);
                 }
 
-                // validatie = weg als die bestaat
+                // validatie = weg als gebruiker bestaat
                 ModelState.Remove(nameof(model.First_Name));
                 ModelState.Remove(nameof(model.Middle_Name));
                 ModelState.Remove(nameof(model.Last_Name));
@@ -196,7 +223,7 @@ namespace beestje_op_je_feestje.Controllers
             }
             else
             {
-                //nieuwe aanmaken als die niet bestaat
+                //nieuwe gebruikers
                 if (!ModelState.IsValid)
                 {
                     model.Animals = await AnimalRepo.GetAnimalsByIdsAsync(animalIds);
@@ -204,25 +231,25 @@ namespace beestje_op_je_feestje.Controllers
                     return View("FillDetails_Step_2", model);
                 }
 
-                account = new Account
-                {
-                    First_Name = model.First_Name,
-                    Middle_Name = model.Middle_Name,
-                    Last_Name = model.Last_Name,
-                    Street_Name = model.Street_Name,
-                    Street_Number = model.Street_Number,
-                    City = model.City,
-                    Email = model.Email
-                };
-
+                //bestaande gebruikers
                 var existingAccount = AccountRepo.GetAccountByEmail(model.Email);
                 if (existingAccount == null)
                 {
+                    account = new Account
+                    {
+                        First_Name = model.First_Name,
+                        Middle_Name = model.Middle_Name,
+                        Last_Name = model.Last_Name,
+                        Street_Name = model.Street_Name,
+                        Street_Number = model.Street_Number,
+                        City = model.City,
+                        Email = model.Email
+                    };
                     await AccountRepo.InsertNewAccount(account);
                 }
                 else
                 {
-                    account.Id = existingAccount.Id; 
+                    account = existingAccount;
                 }
             }
 
@@ -233,23 +260,25 @@ namespace beestje_op_je_feestje.Controllers
                 ModelState.AddModelError("", "Geen boeking gevonden voor de geselecteerde datum.");
                 return View("FillDetails_Step_2", model);
             }
+
             booking.UserId = account.Id;
-            booking.AmountOfAnimals = animalIds.Count; 
+            booking.AmountOfAnimals = animalIds.Count;
+
+            // dier bijwerken
             foreach (var animalId in animalIds)
             {
                 var animal = AnimalRepo.GetAnimalById(animalId);
                 if (animal != null)
                 {
                     animal.IsBooked = true;
-                    animal.BookingDate = booking.SelectedDate; 
+                    animal.BookingDate = booking.SelectedDate;
                     await AnimalRepo.UpdateAnimalAsync(animal);
                 }
             }
 
             await BookingRepo.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Uw boeking is succesvol voltooid!";
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("BookingAnimalOverview", new { selectedDate = booking.SelectedDate });
         }
 
 

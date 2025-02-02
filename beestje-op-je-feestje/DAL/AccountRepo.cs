@@ -3,6 +3,7 @@ using beestje_op_je_feestje.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace beestje_op_je_feestje.DAL
 {

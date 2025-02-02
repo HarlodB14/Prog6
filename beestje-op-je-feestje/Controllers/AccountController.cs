@@ -48,9 +48,14 @@ namespace beestje_op_je_feestje.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Check if email exists in both IdentityUser and Account
-                var emailExists = await _userManager.FindByEmailAsync(model.Email) != null ||
-                                  _accountRepo.GetAllAccounts().Any(a => a.Email == model.Email);
+                string email = model.Email;
+                if (string.IsNullOrEmpty(email))
+                {
+                    email = $"{model.First_Name.ToLower()}@net.com"; 
+                }
+
+                var emailExists = await _userManager.FindByEmailAsync(email) != null ||
+                                  _accountRepo.GetAllAccounts().Any(a => a.Email == email);
 
                 if (emailExists)
                 {
@@ -60,8 +65,8 @@ namespace beestje_op_je_feestje.Controllers
 
                 var user = new IdentityUser
                 {
-                    UserName = model.Email,
-                    Email = model.Email,
+                    UserName = email, 
+                    Email = email,    
                     PhoneNumber = model.PhoneNumber
                 };
                 var password = PasswordGenerator();
@@ -78,7 +83,7 @@ namespace beestje_op_je_feestje.Controllers
 
                 var account = new Account
                 {
-                    Email = model.Email, 
+                    Email = email, 
                     First_Name = model.First_Name,
                     Last_Name = model.Last_Name,
                     PhoneNumber = model.PhoneNumber,
@@ -196,26 +201,18 @@ namespace beestje_op_je_feestje.Controllers
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         TempData["SuccessMessage"] = "Welkom " + user.UserName + "!";
-
-                        // Store the email in TempData
                         TempData["UserEmail"] = model.Email;
-
-                        // Check if the user is an admin
                         var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
 
                         if (!isAdmin)
                         {
-                            // Retrieve booking data from TempData
-                            var selectedIdAnimals = TempData["SelectedAnimalIds"] as string;
-                            var selectedDate = TempData["SelectedDate"] as string;
+                            var selectedDate = HttpContext.Session.GetString("SelectedDate");
+                            var selectedAnimals = HttpContext.Session.GetString("SelectedAnimals");
 
-                            // Ensure TempData is kept for further requests
-                            TempData.Keep("SelectedAnimalIds");
                             TempData.Keep("IsLoggedIn");
-                            TempData.Keep("SelectedDate");
                             TempData.Keep("Email");
 
-                            if (!string.IsNullOrEmpty(selectedIdAnimals) &&
+                            if (!string.IsNullOrEmpty(selectedAnimals) &&
                                 !string.IsNullOrEmpty(selectedDate) &&
                                 DateTime.TryParse(selectedDate, out _))
                             {
@@ -224,7 +221,7 @@ namespace beestje_op_je_feestje.Controllers
                                 {
                                     IsLoggedIn = true,
                                     email = model.Email,
-                                    selectedIdAnimals,
+                                    selectedAnimals,
                                     selectedDate
                                 });
                             }
