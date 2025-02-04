@@ -12,7 +12,7 @@ namespace beestje_op_je_feestje.ViewModels
         public DateTime SelectedDate { get; set; }
         public List<Animal> Animals { get; set; } = new List<Animal>();
 
-        public string DiscountType { get; set; } 
+        public string? DiscountType { get; set; } 
 
         public List<int> SelectedIdAnimals { get; set; } = new List<int>();
     }
