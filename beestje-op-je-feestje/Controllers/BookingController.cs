@@ -131,7 +131,7 @@ namespace beestje_op_je_feestje.Controllers
                 Middle_Name = userAccount.Middle_Name,
                 Last_Name = userAccount.Last_Name,
                 Street_Name = userAccount.Street_Name,
-                Street_Number = userAccount.Street_Number,
+                Street_Number = (int)userAccount.Street_Number,
                 City = userAccount.City,
                 Email = userAccount.Email,
                 SelectedIdAnimals = selectIdAnimals,
@@ -304,7 +304,7 @@ namespace beestje_op_je_feestje.Controllers
                     viewModel.Middle_Name = userAccount.Middle_Name;
                     viewModel.Last_Name = userAccount.Last_Name;
                     viewModel.Street_Name = userAccount.Street_Name;
-                    viewModel.Street_Number = userAccount.Street_Number;
+                    viewModel.Street_Number = (int)userAccount.Street_Number;
                     viewModel.City = userAccount.City;
                     viewModel.Email = userAccount.Email;
                 }
