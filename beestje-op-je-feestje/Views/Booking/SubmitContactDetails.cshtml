@@ -43,7 +43,8 @@
                     </div>
                     <div class="card-body">
                         <p>
-                            <strong>Naam:</strong> <span class="text-muted">Voornaam:</span> @Model.First_Name <br>
+                            <strong>Naam:</strong><br />
+                            <span class="text-muted">Voornaam:</span> @Model.First_Name <br>
                             <span class="text-muted">Tussenvoegsel:</span> @(string.IsNullOrWhiteSpace(Model.Middle_Name) ? "Leeg" : Model.Middle_Name) <br>
                             <span class="text-muted">Achternaam:</span> @Model.Last_Name
                         </p>

@@ -19,7 +19,7 @@ namespace beestje_op_je_feestje.ViewModels
         [Required(ErrorMessage = "email-adres is verplicht.")]
         public string Email { get; set; }
         public DateTime SelectedDate { get; set; }
-        public TypeEnum DiscountType { get; set; }
+        public string DiscountType { get; set; }
         public List<Animal> Animals { get; set; }
         public List<int> SelectedIdAnimals { get; set; }
         public string ImageUrl { get; set; }

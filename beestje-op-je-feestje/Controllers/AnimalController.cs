@@ -168,7 +168,8 @@ namespace beestje_op_je_feestje.Controllers
                 TempData["ErrorMessage"] = "Dier niet gevonden!";
                 return RedirectToAction("Index");
             }
-
+            _animalrepo.DeleteAnimalById(id);
+            _ = _animalrepo.SaveChangesAsync();
             TempData["SuccessMessage"] = animal.Name + " is succesvol verwijderd!";
             return RedirectToAction("Index");
         }
