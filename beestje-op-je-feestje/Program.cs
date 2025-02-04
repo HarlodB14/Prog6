@@ -1,4 +1,5 @@
 using beestje_op_je_feestje.DAL;
+using beestje_op_je_feestje.Models.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +26,9 @@ internal class Program
         builder.Services.AddScoped<AccountRepo>();
         builder.Services.AddScoped<AnimalRepo>();
         builder.Services.AddScoped<BookingRepo>();
+        builder.Services.AddScoped<DateRestriction>();
+        builder.Services.AddScoped<RestrictedAnimalValidation>();
+        builder.Services.AddScoped<FlyingValidation>();
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddSession(options =>
         {

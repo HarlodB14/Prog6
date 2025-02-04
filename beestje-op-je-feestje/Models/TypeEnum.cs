@@ -2,6 +2,6 @@
 {
     public enum TypeEnum
     {
-        tropical, farm, exotic, snow, dessert, jungle,silver,gold,platinum,nothing
+        flying, tropical, farm, exotic, snow, dessert, jungle, silver, gold, platinum, nothing, VIP
     }
 }

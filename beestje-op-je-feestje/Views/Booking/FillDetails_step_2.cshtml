@@ -32,7 +32,7 @@
                 </div>
                 <div class="card-body">
                     <form asp-action="SubmitContactDetails" method="post">
-                        <input type="hidden" name="selectedAnimalIds" value="@string.Join(",", Model.SelectedIdAnimals)" />
+                        <input type="hidden" name="selectedAnimalIds" value="@string.Join(",", Model.SelectedIdAnimals ?? new List<int>())" />
                         <input type="hidden" asp-for="IsLoggedIn" />
                         <div class="d-flex flex-wrap justify-content-between">
                             <div class="w-50 pe-3">
