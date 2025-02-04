@@ -1,0 +1,52 @@
+﻿@model List<beestje_op_je_feestje.ViewModels.BookingViewModel>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col">
+            <h1 class="display-4">Mijn Boekingen</h1>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Datum</th>
+                    <th scope="col">Aantal Dieren</th>
+                    <th scope="col">Kortings Type</th>
+                    <th scope="col" class="text-center">Actie</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var booking = Model[i];
+
+                    <tr>
+                        <th scope="row">@(i + 1)</th>
+                        <td>@booking.SelectedDate.ToString("dd-MM-yyyy")</td>
+                        <td>@booking.Animals.Count</td>
+                        <td>@booking.DiscountType</td>
+                        <td class="text-center">
+                            <div class="d-inline-flex">
+                                <form asp-controller="Booking" asp-action="Delete" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@booking.Id" />
+                                    <button type="submit" class="btn btn-danger me-2">Verwijderen</button>
+                                </form>
+                                <a asp-controller="Booking" asp-action="Detail" asp-route-id="@booking.Id" class="btn btn-info">Info</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info mt-3">
+            Je hebt nog geen boekingen.
+        </div>
+    }
+</div>

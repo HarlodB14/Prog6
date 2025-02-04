@@ -5,24 +5,25 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using beestje_op_je_feestje.ViewModels;
+using beestje_op_je_feestje.DAL;
 
 namespace beestje_op_je_feestje.Controllers
 {
     public class AnimalController : Controller
     {
-        private readonly AnimalPartyContext _context;
+        private readonly AnimalRepo _animalrepo;
         private readonly IWebHostEnvironment _environment;
 
-        public AnimalController(AnimalPartyContext context, IWebHostEnvironment environment)
+        public AnimalController(AnimalRepo repository, IWebHostEnvironment environment)
         {
-            _context = context;
+            _animalrepo = repository;
             //for uploading files
             _environment = environment;
         }
         [HttpGet]
         public IActionResult Index()
         {
-            var animals = _context.animals.ToList();
+            var animals = _animalrepo.GetAllAnimals();
             return View(animals);
         }
         [HttpGet]
@@ -48,8 +49,7 @@ namespace beestje_op_je_feestje.Controllers
                 ImageUrl = viewModel.ImageUrl
             };
 
-            _context.animals.Add(animal);
-            await _context.SaveChangesAsync();
+            await _animalrepo.InsertNewAnimalAsync(animal);
 
             TempData["SuccessMessage"] = animal.Name + " is succesvol toegevoegd!";
             return RedirectToAction("Index");
@@ -81,7 +81,7 @@ namespace beestje_op_je_feestje.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var animal = _context.animals.FirstOrDefault(a => a.Id == id);
+            var animal = _animalrepo.GetAnimalById(id);
             if (animal == null)
             {
                 return NotFound();
@@ -96,13 +96,13 @@ namespace beestje_op_je_feestje.Controllers
                 ImageUrl = animal.ImageUrl
             };
 
-            return View(viewModel);  
+            return View(viewModel);
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(AnimalViewModel viewModel, IFormFile imageFile)
         {
-            var animal = _context.animals.FirstOrDefault(a => a.Id == viewModel.Id);
+            var animal = _animalrepo.GetAnimalById(viewModel.Id);
             if (animal == null)
             {
                 return NotFound();
@@ -110,8 +110,8 @@ namespace beestje_op_je_feestje.Controllers
 
             if (imageFile != null && imageFile.Length > 0)
             {
-                await ProcessImage(viewModel, imageFile); 
-                animal.ImageUrl = viewModel.ImageUrl; 
+                await ProcessImage(viewModel, imageFile);
+                animal.ImageUrl = viewModel.ImageUrl;
             }
             else
             {
@@ -131,7 +131,7 @@ namespace beestje_op_je_feestje.Controllers
                 return View(viewModel);
             }
 
-            await _context.SaveChangesAsync();
+            await _animalrepo.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"{viewModel.Name} succesvol bijgewerkt!";
             return RedirectToAction("Index");
@@ -140,44 +140,36 @@ namespace beestje_op_je_feestje.Controllers
         [HttpGet]
         public IActionResult Detail(int id)
         {
-            var animal = _context.animals
-                .Where(a => a.Id == id)
-                .Select(a => new AnimalViewModel
-                {
-                    Name = a.Name,
-                    Type = a.Type,
-                    Price = a.Price,
-                    ImageUrl = a.ImageUrl
-                })
-                .FirstOrDefault();
-
+            var animal = _animalrepo.GetAnimalById(id);
             if (animal == null)
             {
                 return NotFound();
             }
 
-            return View(animal);
+            var viewModel = new AnimalViewModel
+            {
+                Id = animal.Id,
+                Name = animal.Name,
+                Type = animal.Type,
+                Price = animal.Price,
+                ImageUrl = animal.ImageUrl
+            };
+
+            return View(viewModel);
         }
 
 
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            var animal = _context.animals.FirstOrDefault(a => a.Id == id);
+            var animal = _animalrepo.GetAnimalById(id);
             if (animal == null)
             {
                 TempData["ErrorMessage"] = "Dier niet gevonden!";
                 return RedirectToAction("Index");
             }
-
-            _context.animals.Remove(animal);
-            _context.SaveChanges();
-
-            if (!_context.animals.Any())
-            {
-                _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT ('animals', RESEED, 0)");
-            }
-
+            _animalrepo.DeleteAnimalById(id);
+            _ = _animalrepo.SaveChangesAsync();
             TempData["SuccessMessage"] = animal.Name + " is succesvol verwijderd!";
             return RedirectToAction("Index");
         }

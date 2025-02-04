@@ -1,0 +1,117 @@
+﻿@model beestje_op_je_feestje.ViewModels.ContactDetailsViewModel
+
+@{
+    ViewData["Title"] = "Stap 2 - Vul je contactgegevens in";
+}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4 fw-bold text-primary"
+        style="font-size: 2rem; letter-spacing: 0.1rem; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);">
+        @ViewData["Title"]
+    </h1>
+
+    <ul class="nav nav-pills nav-fill mb-4">
+        <li class="nav-item">
+            <a class="nav-link" href="#">1. Beestjes</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="#">2. Gegevens</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">3. Bevestigen</a>
+        </li>
+    </ul>
+
+    <div class="row">
+        <div class="col-lg-7 d-flex flex-column">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white text-center" style="padding: 1rem; border-radius: 0.5rem;">
+                    <h5 class="card-title mb-0 fw-bold" style="font-size: 1.5rem; letter-spacing: 0.05rem; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);">
+                        📝 Vul hier je contactgegevens in
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="SubmitContactDetails" method="post">
+                        <input type="hidden" name="selectedAnimalIds" value="@string.Join(",", Model.SelectedIdAnimals)" />
+                        <input type="hidden" asp-for="IsLoggedIn" />
+                        <div class="d-flex flex-wrap justify-content-between">
+                            <div class="w-50 pe-3">
+                                <div class="form-group mb-2">
+                                    <label asp-for="First_Name" class="form-label">Voornaam</label>
+                                    <input asp-for="First_Name" class="form-control form-control-sm" placeholder="vul hier een Voornaam" disabled="@Model.IsLoggedIn" />
+                                    <span asp-validation-for="First_Name" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label asp-for="Middle_Name" class="form-label">Tussenvoegsel</label>
+                                    <input asp-for="Middle_Name" class="form-control form-control-sm" placeholder="vul hier een Tussenvoegsel" disabled="@Model.IsLoggedIn" />
+                                    <span asp-validation-for="Middle_Name" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label asp-for="Last_Name" class="form-label">Achternaam</label>
+                                    <input asp-for="Last_Name" class="form-control form-control-sm" placeholder="vul hier een Achternaam" disabled="@Model.IsLoggedIn" />
+                                    <span asp-validation-for="Last_Name" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label asp-for="Street_Name" class="form-label">Straatnaam</label>
+                                    <input asp-for="Street_Name" class="form-control form-control-sm" placeholder="vul hier een Straatnaam" disabled="@Model.IsLoggedIn" />
+                                    <span asp-validation-for="Street_Name" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label asp-for="Street_Number" class="form-label">Huisnummer</label>
+                                    <input asp-for="Street_Number" class="form-control form-control-sm" placeholder="vul hier een Huisnummer" value="" disabled="@Model.IsLoggedIn" />
+                                    <span asp-validation-for="Street_Number" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label asp-for="City" class="form-label">Woonplaats</label>
+                                    <input asp-for="City" class="form-control form-control-sm" placeholder="vul hier een woonplaats" disabled="@Model.IsLoggedIn" />
+                                    <span asp-validation-for="City" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label asp-for="Email" class="form-label">Email</label>
+                                    <input asp-for="Email" class="form-control form-control-sm" placeholder="vul hier een email-adres" disabled="@Model.IsLoggedIn" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <div class="form-group text-center mt-2">
+                                    <a asp-controller="Booking" asp-action="SubmitContactDetails" class="btn btn-outline-primary">Ga naar stap 3</a>
+                                </div>
+                            </div>
+                            <div class="w-50 text-center align-self-center">
+                                <h5 class="card-title mb-3">Heb je een account?</h5>
+                                <a asp-controller="Account" asp-action="Login"
+                                   asp-route-returnUrl="@Url.Action("SubmitContactDetails", "Booking", new { selectedIdAnimals = string.Join(",", Model.SelectedIdAnimals), selectedDate = Model.SelectedDate.ToString("yyyy-MM-dd") })"
+                                   class="btn btn-outline-primary btn-sm">
+                                    Inloggen
+                                </a>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">Boeking</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Datum:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                    <p><strong>Beestjes:</strong></p>
+                    <ul class="list-group">
+                        @foreach (var animal in Model.Animals)
+                        {
+                            <li class="list-group-item d-flex align-items-center">
+                                <img src="@animal.ImageUrl" alt="@animal.Name" class="me-2 rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" />
+                                <div>
+                                    <strong>@animal.Name</strong><br />
+                                    <span class="text-muted">@animal.Price.ToString("C0", new System.Globalization.CultureInfo("nl-NL"))</span>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

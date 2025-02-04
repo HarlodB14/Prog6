@@ -1,5 +1,5 @@
 ﻿using beestje_op_je_feestje.Models;
-using Type = beestje_op_je_feestje.Models.Type;
+using TypeEnum = beestje_op_je_feestje.Models.TypeEnum;
 
 namespace beestje_op_je_feestje.ViewModels
 {
@@ -7,7 +7,7 @@ namespace beestje_op_je_feestje.ViewModels
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public Type Type { get; set; }
+        public TypeEnum Type { get; set; }
 
         public decimal Price { get; set; }
 
