@@ -68,11 +68,18 @@ internal class Program
         {
             var serviceProvider = scope.ServiceProvider;
 
-            // Ensure the database is created and migrated
             var context = serviceProvider.GetRequiredService<AnimalPartyContext>();
-            context.Database.Migrate();
 
-            // Create roles if they do not exist
+            try
+            {
+                context.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error applying migrations: {ex.Message}");
+                throw;
+            }
+
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var roles = new[] { "admin", "customer" };
             foreach (var role in roles)
@@ -83,7 +90,6 @@ internal class Program
                 }
             }
 
-            // Create a default manager user if it doesn't exist
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
             string email = "admin@boerderij.nl";
             string password = "Wachtwoord123!";
