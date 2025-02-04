@@ -1,0 +1,82 @@
+﻿@model beestje_op_je_feestje.ViewModels.BookingViewModel
+@{
+    ViewData["Title"] = "Stap 1 - Kies je beestjes";
+}
+
+<div class="container mt-4">
+    <h1 class="text-center">@ViewData["Title"]</h1>
+
+    <ul class="nav nav-pills nav-fill mb-4">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">1. Beestjes</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">2. Gegevens</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">3. Bevestiging</a>
+        </li>
+    </ul>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <strong>Corrigeer de volgende fouten:</strong>
+            @Html.ValidationSummary()
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form asp-action="BoekingDierenOverview" method="post">
+                <div class="row">
+                    @foreach (var animal in Model.Animals)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <img src="~/images/@animal.ImageUrl" class="card-img-top animal-image" alt="@animal.Name">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">@animal.Name</h5>
+                                    <p class="card-text">@animal.Price$</p>
+                                    <input type="checkbox" name="SelectedIdAnimals" value="@animal.Id"
+                                           class="form-check-input"
+                                           onchange="this.form.submit();"
+                                    @(Model.SelectedIdAnimals.Contains(animal.Id) ? "checked" : "") />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <input type="hidden" asp-for="SelectedDate" />
+                <input type="hidden" asp-for="DiscountType" />
+                <div class="d-grid gap-2 mt-3">
+                    <button type="submit" name="action" value="FillDetails_step_2" class="btn btn-primary btn-lg">Ga door naar stap 2</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    Boeking
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Datum: @Model.SelectedDate.ToString("dd/MM/yyyy")</li>
+                    <li class="list-group-item">
+                        Beestjes:
+                        <span>
+                            @if (Model.SelectedIdAnimals.Any())
+                            {
+                                @string.Join(", ", Model.Animals.Where(a => Model.SelectedIdAnimals.Contains(a.Id)).Select(a => a.Name))
+                            }
+                            else
+                            {
+                                <text>Nog geen beestjes geselecteerd</text>
+                            }
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

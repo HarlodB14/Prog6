@@ -10,6 +10,7 @@ namespace beestje_op_je_feestje.Models
         [Required]
         public string First_Name { get; set; }
         [Required]
+        public string? Middle_Name { get; set; }
         public string Last_Name { get; set; }
         [Required]
         public string Street_Name { get; set; }

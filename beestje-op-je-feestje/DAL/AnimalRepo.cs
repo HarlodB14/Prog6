@@ -25,6 +25,13 @@ namespace beestje_op_je_feestje.DAL
             return animals;
         }
 
+        public async Task<List<Animal>> GetAnimalsByIdsAsync(List<int> animalIds)
+        {
+            return await _animalPartyContext.Animals
+                .Where(a => animalIds.Contains(a.Id))
+                .ToListAsync();
+        }
+
         public Animal GetAnimalById(int id)
         {
             var animal = _animalPartyContext.Animals.FirstOrDefault(a => a.Id == id);
@@ -46,6 +53,11 @@ namespace beestje_op_je_feestje.DAL
         public async Task SaveChangesAsync()
         {
             await _animalPartyContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateAnimalAsync(Animal animal)
+        {
+            _animalPartyContext.Animals.Update(animal);
         }
     }
 }

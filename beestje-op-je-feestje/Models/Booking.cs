@@ -1,27 +1,18 @@
-﻿namespace beestje_op_je_feestje.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace beestje_op_je_feestje.Models
 {
     public class Booking
     {
-        private List<Animal> Animals { get; set; }
-
+        [Key]
+        public int Id { get; set; }
+        [ForeignKey("Account")]
+        public int? UserId { get; set; }
         public DateTime SelectedDate { get; set; }
 
+        [InverseProperty("Booking")]
+        public virtual ICollection<Animal>? Animals { get; set; } = new List<Animal>();
         public int AmountOfAnimals { get; set; }
-
-        public Booking()
-        {
-            Animals = new List<Animal>();
-        }
-        public void AddAnimal(Animal animal)
-        {
-            Animals.Add(animal);
-        }
-
-        public List<Animal> GetAllAnimals()
-        {
-            return Animals;
-        }
-
-        public int GetAmountOfAnimals => Animals.Count;
     }
 }

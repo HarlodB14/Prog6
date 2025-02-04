@@ -1,0 +1,80 @@
+﻿@model beestje_op_je_feestje.ViewModels.ContactDetailsViewModel
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4 fw-bold text-primary"
+        style="font-size: 2rem; letter-spacing: 0.1rem; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);">
+        Boeking @Model.SelectedDate.ToString("yyyy-MM-dd")
+    </h1>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="mb-0 fw-bold">📝 Contactgegevens</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Voornaam:</strong> @Model.First_Name</p>
+                    <p><strong>Tussenvoegsel:</strong> @(string.IsNullOrEmpty(Model.Middle_Name) ? "-" : Model.Middle_Name)</p>
+                    <p><strong>Achternaam:</strong> @Model.Last_Name</p>
+                    <p><strong>Email:</strong> @Model.Email</p>
+                    <p><strong>Straatnaam:</strong> @Model.Street_Name</p>
+                    <p><strong>Huisnummer:</strong> @Model.Street_Number</p>
+                    <p><strong>Woonplaats:</strong> @Model.City</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white text-center">
+                    <h5 class="mb-0 fw-bold">📅 Boeking Informatie</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Geselecteerde Datum:</strong> @Model.SelectedDate.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Kortingstype:</strong> @Model.DiscountType</p>
+
+                    <h5 class="mt-4">Geboekte Dieren</h5>
+                    @if (Model.Animals != null && Model.Animals.Any())
+                    {
+                        <div class="row row-cols-2 g-3 mt-2">
+                            @foreach (var animal in Model.Animals?.Where(a => Model.SelectedIdAnimals?.Contains(a.Id) ?? false) ?? Enumerable.Empty<Animal>())
+                            {
+                                <div class="col">
+                                    <div class="card shadow-sm border-0 h-100">
+                                        <img src="@animal.ImageUrl" class="card-img-top rounded-top" alt="@animal.Name" style="height: 150px; object-fit: cover;">
+                                        <div class="card-body text-center">
+                                            <h6 class="card-title fw-bold">@animal.Name</h6>
+                                            <p class="card-text text-muted">€@animal.Price</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Geen dieren geboekt.</p>
+                    }
+                </div>
+                <div class="card-footer text-center" style="background-color: #f1f1f1;">
+                    <h5 class="fw-bold">Totaalprijs</h5>
+                    @{
+                        var totalCost = Model.Animals?.Where(a => Model.SelectedIdAnimals?.Contains(a.Id) ?? false).Sum(a => a.Price) ?? 0;
+                    }
+                    <p class="fw-bold">€@totalCost</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+    {
+        <div class="text-center mt-4">
+            <img src="@Model.ImageUrl" alt="Boeking Afbeelding" class="img-fluid rounded shadow" style="max-width: 400px;">
+        </div>
+    }
+
+    <div class="text-center mt-4">
+        <a asp-controller="Booking" asp-action="MyBookings" class="btn btn-secondary">Terug naar mijn boekingen</a>
+    </div>
+</div>

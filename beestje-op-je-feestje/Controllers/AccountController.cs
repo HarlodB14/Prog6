@@ -22,14 +22,14 @@ namespace beestje_op_je_feestje.Controllers
             _accountRepo = repository;
         }
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl; 
             return View();
         }
         [HttpGet]
         public IActionResult Index(AccountViewModel model)
         {
-            //haal usergegvens op van account //TODO DAL laag laten doen
             var accounts = _accountRepo.GetAllAccounts();
 
             return View(accounts);
@@ -48,35 +48,44 @@ namespace beestje_op_je_feestje.Controllers
         {
             if (ModelState.IsValid)
             {
+                string email = model.Email;
+                if (string.IsNullOrEmpty(email))
+                {
+                    email = $"{model.First_Name.ToLower()}@net.com"; 
+                }
+
+                var emailExists = await _userManager.FindByEmailAsync(email) != null ||
+                                  _accountRepo.GetAllAccounts().Any(a => a.Email == email);
+
+                if (emailExists)
+                {
+                    ModelState.AddModelError("", "Een account met dit e-mailadres bestaat al.");
+                    return View(model);
+                }
+
                 var user = new IdentityUser
                 {
-                    //email generen als die niet ingevuld wordt
-                    UserName = string.IsNullOrEmpty(model.Email)
-                    ? $"{model.First_Name.ToLower()}.{model.Last_Name.ToLower()}.{Guid.NewGuid().ToString().Substring(0, 8)}"
-                      : model.Email,
-                    Email = model.Email,
-                    PhoneNumber = model.PhoneNumber,
+                    UserName = email, 
+                    Email = email,    
+                    PhoneNumber = model.PhoneNumber
                 };
                 var password = PasswordGenerator();
                 var identityResult = await _userManager.CreateAsync(user, password);
 
-                //check of aanmaken is gelukt
                 if (!identityResult.Succeeded)
                 {
                     foreach (var error in identityResult.Errors)
                     {
-                        ModelState.AddModelError(string.Empty, error.Description);
+                        ModelState.AddModelError("", error.Description);
                     }
                     return View(model);
                 }
 
-                //account vullen voor adresgegegevens
                 var account = new Account
                 {
-                    Id = model.Id,
+                    Email = email, 
                     First_Name = model.First_Name,
                     Last_Name = model.Last_Name,
-                    Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     Street_Name = model.Street_Name,
                     Street_Number = model.Street_Number,
@@ -84,10 +93,9 @@ namespace beestje_op_je_feestje.Controllers
                     DiscountType = model.DiscountType
                 };
 
-                _accountRepo.InsertNewAccount(account);
+                await _accountRepo.InsertNewAccount(account);
 
-
-                TempData["SuccessMessage"] = "Nieuwe klant met naam: " + model.Email + " aangemaakt!";
+                TempData["SuccessMessage"] = $"Nieuwe klant met naam: {model.First_Name} {model.Last_Name} aangemaakt!";
                 TempData["GeneratedPassword"] = password;
                 return RedirectToAction("Index");
             }
@@ -121,7 +129,6 @@ namespace beestje_op_je_feestje.Controllers
         }
 
         [HttpPost]
-        [HttpPost]
         public async Task<IActionResult> Edit(AccountViewModel model)
         {
             if (!ModelState.IsValid)
@@ -152,6 +159,11 @@ namespace beestje_op_je_feestje.Controllers
             return RedirectToAction("Index", "Account");
         }
 
+        public async Task<IdentityUser> GetUserAsync()
+        {
+             return await  _signInManager.UserManager.GetUserAsync(User);
+        }
+
         public IActionResult Detail(int id)
         {
             var account = _accountRepo.GetAccountById(id);
@@ -177,7 +189,7 @@ namespace beestje_op_je_feestje.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -189,7 +201,40 @@ namespace beestje_op_je_feestje.Controllers
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         TempData["SuccessMessage"] = "Welkom " + user.UserName + "!";
-                        return RedirectToAction("Index", "Home");
+                        TempData["UserEmail"] = model.Email;
+                        var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+                        if (!isAdmin)
+                        {
+                            var selectedDate = HttpContext.Session.GetString("SelectedDate");
+                            var selectedAnimals = HttpContext.Session.GetString("SelectedAnimals");
+
+                            TempData.Keep("IsLoggedIn");
+                            TempData.Keep("Email");
+
+                            if (!string.IsNullOrEmpty(selectedAnimals) &&
+                                !string.IsNullOrEmpty(selectedDate) &&
+                                DateTime.TryParse(selectedDate, out _))
+                            {
+                                // Redirect to SubmitContactDetails with the retrieved data
+                                return RedirectToAction("SubmitContactDetails", "Booking", new
+                                {
+                                    IsLoggedIn = true,
+                                    email = model.Email,
+                                    selectedAnimals,
+                                    selectedDate
+                                });
+                            }
+                            else
+                            {
+                                TempData["ErrorMessage"] = "Geen boekingsgegevens gevonden. Log opnieuw in om verder te gaan.";
+                                return RedirectToAction("Index", "Home");
+                            }
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
                     else
                     {
@@ -201,6 +246,7 @@ namespace beestje_op_je_feestje.Controllers
                     ModelState.AddModelError(string.Empty, "Gebruiker niet gevonden");
                 }
             }
+            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 

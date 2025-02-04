@@ -1,25 +1,42 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
+﻿@model beestje_op_je_feestje.ViewModels.BookingViewModel
 
-@if (User.IsInRole("Klant"))
-{
-    <div class="container mt-5">
-        <div class="p-5 bg-light rounded shadow-sm">
-            <div class="text-center">
-                <h1 class="display-4 text-dark mb-4">Boek een beestje</h1>
-                <p class="lead text-muted">
-                    Welkom bij Beestje op een feestje (BOEF). Hier kun je een of meerdere van onze dieren boeken voor op jou feestje!
-                    Kies de dag van je feestje en volg de stappen om je beestje te boeken.
-                </p>
+<div class="container mt-4">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (!User.IsInRole("admin"))
+    {
+        <div class="text-center mb-3">
+            <div class="bg-light p-4 rounded-lg shadow">
+                <h2 class="display-4 text-primary font-weight-bold">Boek een beestje</h2>
+                <p class="lead text-muted">Welkom bij <span class="font-italic">'Beestje op een feestje (BOEF)'</span>. Hier kun je een of meerdere van onze dieren boeken voor jouw feestje! Kies de dag van je feestje en volg de stappen om je beestje te boeken.</p>
             </div>
         </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form asp-controller="Booking" asp-action="Index" method="post" class="form-inline justify-content-center w-50">
+                    <div class="form-group mb-2">
+                        <label asp-for="SelectedDate" class="form-label">Kies een datum:</label>
+                        <input asp-for="SelectedDate" type="date" class="form-control"
+                               value="@DateTime.Now.ToString("yyyy-MM-dd")"
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+
+                        <span asp-validation-for="SelectedDate" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Boeken</button>
+                </form>
+            </div>
+        </div>
+    }
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            <img src="~/images/farm-image.png" alt="Boek een beestje" class="img-fluid">
+        </div>
     </div>
-}
+</div>
