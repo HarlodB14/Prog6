@@ -460,6 +460,7 @@ namespace beestje_op_je_feestje.Controllers
                 if (animal != null)
                 {
                     animal.IsBooked = true;
+                    animal.BookingId = booking.Id;
                     animal.BookingDate = booking.SelectedDate;
                     await _animalRepo.UpdateAnimalAsync(animal);
                 }
