@@ -20,6 +20,7 @@ namespace beestje_op_je_feestje.ViewModels
         public string Email { get; set; }
         public DateTime SelectedDate { get; set; }
         public string DiscountType { get; set; }
+        public double TotalDiscount { get; internal set; }
         public List<Animal> Animals { get; set; }
         public List<int> SelectedIdAnimals { get; set; }
         public string ImageUrl { get; set; }

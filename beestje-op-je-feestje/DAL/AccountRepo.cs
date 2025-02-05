@@ -111,5 +111,26 @@ namespace beestje_op_je_feestje.DAL
         {
             await _animalPartyContext.SaveChangesAsync();
         }
+
+        public string GetDiscountCard(string userEmail)
+        {
+            var account = _animalPartyContext.Accounts
+               .Select(a => new Account
+               {
+                   Id = a.Id,
+                   First_Name = a.First_Name ?? "Leeg",
+                   Middle_Name = a.Middle_Name ?? "Leeg",
+                   Last_Name = a.Last_Name ?? "Leeg",
+                   Email = a.Email ?? "Leeg",
+                   PhoneNumber = a.PhoneNumber ?? "Leeg",
+                   Street_Name = a.Street_Name ?? "Leeg",
+                   Street_Number = a.Street_Number,
+                   City = a.City ?? "Leg",
+                   DiscountType = a.DiscountType ?? "Leeg"
+               })
+               .FirstOrDefault(a => a.Email == userEmail);
+
+            return account.DiscountType;
+        }
     }
 }
