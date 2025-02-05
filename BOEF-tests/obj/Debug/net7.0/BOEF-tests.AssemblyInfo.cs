@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BOEF-tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+40b1706ca5f89b2651be13e6425dc54bf5bfd065")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dd4d715514a80c5a6e3ef33c9e4f82b40c2e75a2")]
 [assembly: System.Reflection.AssemblyProductAttribute("BOEF-tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BOEF-tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
