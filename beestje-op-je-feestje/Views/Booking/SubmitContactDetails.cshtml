@@ -100,7 +100,6 @@
                                     <span>€@animal.Price</span>
                                 </li>
                             }
-                            <!-- Add a new list item for the total cost -->
                             @{
                                 var totalCost = Model.Animals
                                 .Where(a => Model.SelectedIdAnimals.Contains(a.Id))

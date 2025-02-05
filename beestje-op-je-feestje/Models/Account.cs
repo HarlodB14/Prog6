@@ -19,6 +19,7 @@ namespace beestje_op_je_feestje.Models
         [Required]
         public string City { get; set; }
         public string DiscountType { get; set; }
+        public double TotalDiscount { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
     }

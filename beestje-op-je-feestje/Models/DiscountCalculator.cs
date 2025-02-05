@@ -2,12 +2,12 @@
 {
     public class DiscountCalculator
     {
-        private TypeOfDiscount _typeOfDiscount;
+        private string _discountType;
         private double percentage = 0.0;
 
-        public DiscountCalculator(TypeOfDiscount typeOfDiscount)
+        public DiscountCalculator(string typeOfDiscount)
         {
-            _typeOfDiscount = typeOfDiscount;
+            _discountType = typeOfDiscount;
         }
 
         public double BookingDayDiscount(DateTime bookingDate)
@@ -94,12 +94,21 @@
         {
             double totalDiscount = 0.0;
 
-            totalDiscount += BookingDayDiscount(bookingDate);  
-            totalDiscount += AnimalNameDiscount(animals);     
-            totalDiscount += DiscountCardDiscount(hasDiscountCard); 
-            totalDiscount += ThreeOfAKind(animals);          
-            totalDiscount += DuckDiscount(animals);           
-
+            // Sample logic for handling discount types based on the string value
+            if (_discountType == "ThreeOfKind")
+            {
+                totalDiscount += ThreeOfAKind(animals);
+            }
+            else if (_discountType == "Duck")
+            {
+                totalDiscount += DuckDiscount(animals);
+            }
+            else if (_discountType == "MondayDiscount" || _discountType == "TuesdayDiscount")
+            {
+                totalDiscount += BookingDayDiscount(bookingDate);
+            }
+            totalDiscount += AnimalNameDiscount(animals);
+            totalDiscount += DiscountCardDiscount(hasDiscountCard);
             totalDiscount = ApplyMaxDiscount(totalDiscount);
 
             return totalDiscount;

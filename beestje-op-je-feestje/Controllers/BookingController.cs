@@ -206,7 +206,7 @@ namespace beestje_op_je_feestje.Controllers
 
             var userEmail = User.Identity?.Name;
             var userAccount = _accountRepo.GetAccountByEmail(userEmail);
-            var discountCard = userAccount.DiscountType;
+            var discountCard = _accountRepo.GetDiscountCard(userEmail);
             int allowedToBook = GetBookingLimit(discountCard);
             if ( selectedAnimals.Count > allowedToBook)
             {
@@ -339,12 +339,16 @@ namespace beestje_op_je_feestje.Controllers
             var animalIds = selectedAnimals.Split(',').Select(int.Parse).ToList();
             var animals = await _animalRepo.GetAnimalsByIdsAsync(animalIds);
 
+            DiscountCalculator discountCalculator = new DiscountCalculator(model.DiscountType); 
+            double totalDiscount = discountCalculator.CalculateTotalDiscount(await _animalRepo.GetAnimalsByIdsAsync(animalIds), model.SelectedDate, model.DiscountType != null);
+
             ContactDetailsViewModel viewModel = new ContactDetailsViewModel
             {
                 Email = email,
                 SelectedIdAnimals = animalIds,
                 SelectedDate = parsedDate,
                 Animals = animals,
+                TotalDiscount = totalDiscount,
                 IsLoggedIn = isLoggedIn
             };
 
@@ -360,6 +364,7 @@ namespace beestje_op_je_feestje.Controllers
                     viewModel.Street_Number = (int)userAccount.Street_Number;
                     viewModel.City = userAccount.City;
                     viewModel.Email = userAccount.Email;
+                    viewModel.TotalDiscount = totalDiscount;
                 }
             }
 
@@ -378,7 +383,7 @@ namespace beestje_op_je_feestje.Controllers
             model.Last_Name = HttpContext.Session.GetString("Last_Name");
             model.Email = HttpContext.Session.GetString("Email");
             model.Street_Name = HttpContext.Session.GetString("Street_Name");
-            model.Street_Number = HttpContext.Session.GetInt32("Street_Number") ?? 0;
+            model.Street_Number = (int)HttpContext.Session.GetInt32("Street_Number");
             model.City = HttpContext.Session.GetString("City");
 
             if (string.IsNullOrEmpty(selectedAnimals))
@@ -461,7 +466,8 @@ namespace beestje_op_je_feestje.Controllers
             }
 
             await _bookingRepo.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Boeking succesvol opgeslagen voor: " + booking.SelectedDate.ToString("yyyy-MM-dd") + "!";
+
+            TempData["SuccessMessage"] = "Boeking succesvol opgeslagen voor " + booking.SelectedDate.ToString("yyyy-MM-dd");
 
             return RedirectToAction("Index", "Home");
         }
