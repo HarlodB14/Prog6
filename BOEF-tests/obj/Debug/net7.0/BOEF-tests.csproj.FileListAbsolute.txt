@@ -151,3 +151,5 @@ C:\repos\prog6\Prog6\BOEF-tests\obj\Debug\net7.0\refint\BOEF-tests.dll
 C:\repos\prog6\Prog6\BOEF-tests\obj\Debug\net7.0\BOEF-tests.pdb
 C:\repos\prog6\Prog6\BOEF-tests\obj\Debug\net7.0\BOEF-tests.genruntimeconfig.cache
 C:\repos\prog6\Prog6\BOEF-tests\obj\Debug\net7.0\ref\BOEF-tests.dll
+C:\repos\prog6\Prog6\BOEF-tests\bin\Debug\net7.0\Castle.Core.dll
+C:\repos\prog6\Prog6\BOEF-tests\bin\Debug\net7.0\Moq.dll

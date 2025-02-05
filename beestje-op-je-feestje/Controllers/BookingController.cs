@@ -35,7 +35,6 @@ namespace beestje_op_je_feestje.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(int Id, BookingViewModel model)
         {
-            //check voor datum, anders zetten op dag van vndaag
             if (model.SelectedDate == DateTime.MinValue || model.SelectedDate < DateTime.Now.Date)
             {
                 model.SelectedDate = DateTime.Now.Date;
