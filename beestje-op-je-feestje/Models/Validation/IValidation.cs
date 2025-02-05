@@ -2,7 +2,7 @@
 {
     public interface IValidation
     {
-        bool CanBook(List<Animal> animal, Booking booking);
+        bool CanBook(List<Animal> animal, Booking booking,int amount);
         int GetBookingLimit();
     }
 }

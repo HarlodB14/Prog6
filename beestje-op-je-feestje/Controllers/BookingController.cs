@@ -204,6 +204,18 @@ namespace beestje_op_je_feestje.Controllers
                 return View(model);
             }
 
+            var userEmail = User.Identity?.Name;
+            var userAccount = _accountRepo.GetAccountByEmail(userEmail);
+            var discountCard = userAccount.DiscountType;
+            int allowedToBook = GetBookingLimit(discountCard);
+            if ( selectedAnimals.Count > allowedToBook)
+            {
+                ModelState.AddModelError("", "Je hebt het maximale aantal dieren voor jouw kortingskaart overschreden. Je mag maximaal " + allowedToBook + " Boeken");
+                model.Animals = GetAvailableAnimals(model.SelectedDate);
+                return View(model);
+            }
+
+
             if (!_restrictedAnimalValidation.Validate(selectedAnimals, booking))
             {
                 ModelState.AddModelError("", "Je mag geen Leeuw of IJsbeer boeken samen met een Boerderijdier.");
@@ -234,6 +246,20 @@ namespace beestje_op_je_feestje.Controllers
                 selectedAnimalIds = string.Join(",", model.SelectedIdAnimals),
                 selectedDate = model.SelectedDate.ToString("yyyy-MM-dd")
             });
+        }
+
+        private int GetBookingLimit(string discountCard)
+        {
+            switch (discountCard)
+            {
+                case "silver":
+                    return 4;
+                case "gold":
+                case "platinum":
+                    return int.MaxValue;
+                default:
+                    return 3; //standaard 
+            }
         }
 
 
