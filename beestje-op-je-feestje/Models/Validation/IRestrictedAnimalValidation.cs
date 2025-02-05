@@ -4,7 +4,7 @@
     {
         public bool Validate(List<Animal> animals, Booking booking)
         {
-            bool hasRestrictedAnimal = animals.Any(animal => animal.Name == "Leeuw" || animal.Name == "IJsbeer");
+            bool hasRestrictedAnimal = animals.Any(animal => animal.Type == TypeEnum.snow || animal.Type == TypeEnum.lion);
 
             bool hasBoerderijAnimal = animals.Any(animal => animal.Type == TypeEnum.farm);
 
